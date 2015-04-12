@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="PeoteTelnetTest" package="de.peote.telnet" version="0.1.0" company="Sylvio Sell - maitag" />
+	<app main="PeoteTelnetTest" path="Export" file="peoteTelnetTest" />
+	
+	<source path="Source" />
+	
+	<haxelib name="lime" />
+	
+	<assets path="Assets" rename="assets" exclude="lime.svg" />
+	<icon path="Assets/lime.svg" />
+	
+</project>
