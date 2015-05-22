@@ -53,7 +53,12 @@ class PeoteSocket
 				end = true;
 				if (Std.string(unknown) != "Blocked") _onErrorCallback("Unknown exception : "+Std.string(unknown));
 			}
-			if (!end) myBA.writeByte(char); // read new byte
+			if (!end)
+			{	
+				myBA.writeByte(char); // read new byte
+				//if (myBA.bytesAvailable < 1024) myBA.writeByte(char); // read new byte
+				//else {myBA.position = 0; _onDataCallback(myBA);}
+			}
 		}
 		
 		myBA.position = 0;

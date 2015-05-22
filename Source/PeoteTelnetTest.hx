@@ -48,13 +48,17 @@ class PeoteTelnetTest extends Application {
 			bytes.writeByte( data[i] );
 		bytes.position = 0;
 		
-		peoteTelnet.parseTelnetData( bytes );
+		peoteTelnet.parseTelnetData( bytes, remoteInput );
 	}
 	#else
 	public inline function onData(data:ByteArray):Void
 	{
-		peoteTelnet.parseTelnetData( data );
+		peoteTelnet.parseTelnetData( data, remoteInput );
 	}
 	#end
 
+	public inline function remoteInput(b:Int):Void
+	{
+		if (b != 13) trace( String.fromCharCode(b) );
+	}
 }
