@@ -51,6 +51,12 @@ class PeoteTelnet
 		peoteSocket.flush();
 	}
 	
+	public inline function writeBytes(ba:ByteArray):Void
+	{
+		peoteSocket.writeBytes(ba);
+		peoteSocket.flush();
+	}
+	
 	public inline function parseTelnetData(myBA:ByteArray, remoteInput:Int->Void):Void
 	{
 		// zuerst den verbliebenen unverarbeiteten input mit den neuen socket-daten ergaenzen
