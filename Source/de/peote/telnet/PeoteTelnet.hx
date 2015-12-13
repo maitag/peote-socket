@@ -7,7 +7,6 @@ package de.peote.telnet;
  */
 
 import haxe.remoting.FlashJsConnection;
-import lime.utils.ByteArray;
 
 import de.peote.socket.PeoteSocket;
 
@@ -31,18 +30,18 @@ class PeoteTelnet
 	var state:Int = 0;
 	var peoteSocket:PeoteSocket;
 	
-	var width:Int = 107;
-	var height:Int = 46;
+	var width:Int;
+	var height:Int;
 
-	var input:ByteArray;
-	
+
 	var negotiate_data:Array<Int>;
 	#if debugtelnet var debug:String = ""; #end
 	
-	public function new(peoteSocket) 
+	public function new(peoteSocket, width:Int=107, height:Int=46)
 	{
 		this.peoteSocket = peoteSocket;
-		input = new ByteArray();
+		this.width = width;
+		this.height = height;
 	}
 	
 	public inline function writeByte(b:Int):Void
@@ -51,24 +50,17 @@ class PeoteTelnet
 		peoteSocket.flush();
 	}
 	
-	public inline function writeBytes(ba:ByteArray):Void
+	public inline function writeBytes(ba:Array<Int>):Void
 	{
 		peoteSocket.writeBytes(ba);
 		peoteSocket.flush();
 	}
 	
-	public inline function parseTelnetData(myBA:ByteArray, remoteInput:Int->Void):Void
+	public inline function parseTelnetData(myBA:Array<Int>, remoteInput:Int->Void):Void
 	{
-		// zuerst den verbliebenen unverarbeiteten input mit den neuen socket-daten ergaenzen
-		// myBA.position = 0;
-		if (input.bytesAvailable == 0) { input.clear();}
-		var oldpos:Int = input.position;
-		try { input.writeBytes(myBA); } catch (unknown : Dynamic) { trace("ERROR: input.writeBytes(myBa) :"+ unknown); }
-		input.position = oldpos;
-		
-		while (input.bytesAvailable > 0)
+		for (b in myBA)
 		{
-			var b:Int = input.readUnsignedByte();
+			//var b:Int = input.readUnsignedByte();
 			//trace(b, input.bytesAvailable );
 			switch (state)
 			{

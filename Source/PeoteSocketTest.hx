@@ -3,10 +3,8 @@ package;
 import lime.app.Application;
 import haxe.Timer;
 
-#if js
-import js.html.Uint8Array;
-#else
-import lime.utils.ByteArray;
+#if flash
+import flash.utils.ByteArray;
 #end
 
 import de.peote.socket.PeoteSocket;
@@ -35,15 +33,20 @@ class PeoteSocketTest extends Application {
 		
 	}
 	
-	#if js
-	public inline function onData(data:Uint8Array):Void
-	#else
+	#if flash
 	public inline function onData(data:ByteArray):Void
-	#end
 	{
 		trace("onData:" + data);
 		peoteSocket.close();
 		peoteSocket.connect("192.168.1.50", 23);
 	}
+	#else
+	public inline function onData(data:Array<Int>):Void
+	{
+		trace("onData:" + data);
+		peoteSocket.close();
+		peoteSocket.connect("192.168.1.50", 23);
+	}
+	#end
 
 }

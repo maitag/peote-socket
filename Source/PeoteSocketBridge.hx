@@ -69,8 +69,9 @@ class PeoteSocketBridge {
 					},
 					flush: function() {
 						window.PeoteSocket._bridge.flush(this._instance);
-					},
+					}					
 				});
+				
 				window.PeoteSocket._instances = [];
 				
 				var f = function(tag){

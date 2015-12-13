@@ -36,7 +36,7 @@ class PeoteSocket
 		
 		_socket = new Socket();
 		
-		_timer = new Timer(0, 1);
+		_timer = new Timer(0, 42);
 		_timer.addEventListener(TimerEvent.TIMER, function (_) {
 			
 			/*var anz_bytes:Int = _socket.bytesAvailable;

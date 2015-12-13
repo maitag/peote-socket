@@ -27,7 +27,7 @@ class PeoteSocket extends de.peote.socket.flash.PeoteSocket
 
 	// PeoteSocketBridge Event Callbacks - flashplayer calls Javascript-Functions back :)=
 	public inline function onData(data:ByteArray):Void
-	{	
+	{	//ExternalInterface.call("(function(byte){ console.log('len',byte); })", data.length ) ;
 		var bytes:Array<Int> = new Array<Int>();
 		
 		for( i in 0...data.bytesAvailable )
@@ -35,6 +35,7 @@ class PeoteSocket extends de.peote.socket.flash.PeoteSocket
 		
 		//ExternalInterface.call("(function(bytes){ console.log(bytes); })", bytes ) ;
 		ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id, bytes ) ;
+		//ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id, data.toString()) ;
 	}
 
 	public inline function onConnect(connected:Bool, msg:String):Void 

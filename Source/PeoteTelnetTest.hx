@@ -4,11 +4,6 @@ import lime.app.Application;
 import lime.graphics.RenderContext;
 import haxe.Timer;
 
-#if js
-import js.html.Uint8Array;
-#end
-import lime.utils.ByteArray;
-
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
 
@@ -38,20 +33,13 @@ class PeoteTelnetTest extends Application {
 		
 	}
 	
-	#if js
-	public inline function onData(data:Uint8Array):Void
+	#if flash
+	public inline function onData(data:ByteArray):Void
 	{
-		// TODO: optimize raw-socket data from swf-bridge ( see PeoteSocketBridge.hx )
-		//trace(data);
-		var bytes = new ByteArray();
-		for (i in 0...data.length)
-			bytes.writeByte( data[i] );
-		bytes.position = 0;
-		
-		peoteTelnet.parseTelnetData( bytes, remoteInput );
+		peoteTelnet.parseTelnetData( data, remoteInput );
 	}
 	#else
-	public inline function onData(data:ByteArray):Void
+	public inline function onData(data:Array<Int>):Void
 	{
 		peoteTelnet.parseTelnetData( data, remoteInput );
 	}

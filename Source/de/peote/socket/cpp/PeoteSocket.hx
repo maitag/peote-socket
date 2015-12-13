@@ -4,7 +4,7 @@ package de.peote.socket.cpp;
  * @author sylvio sell
  */
 
-import lime.utils.ByteArray;
+import haxe.io.BytesData;
 import haxe.Timer;
 
 import sys.net.Socket;
@@ -13,7 +13,7 @@ import sys.net.Host;
 class PeoteSocket
 {
 	private var _onConnectCallback:Bool -> String -> Void;
-	private var _onDataCallback:ByteArray -> Void;
+	private var _onDataCallback:Array<Int> -> Void;
 	private var _onCloseCallback:String -> Void;
 	private var _onErrorCallback:String -> Void;
 	
@@ -42,7 +42,7 @@ class PeoteSocket
 		var end:Bool = false;
 		var char:Int = 0;
 
-		var myBA:ByteArray = new ByteArray();
+		var myBA:Array<Int> = new Array<Int>();
 
 		while (!end) {
 			try {
@@ -55,14 +55,13 @@ class PeoteSocket
 			}
 			if (!end)
 			{	
-				myBA.writeByte(char); // read new byte
+				myBA.push(char); // read new byte
 				//if (myBA.bytesAvailable < 1024) myBA.writeByte(char); // read new byte
 				//else {myBA.position = 0; _onDataCallback(myBA);}
 			}
 		}
 		
-		myBA.position = 0;
-		if (myBA.bytesAvailable > 0) _onDataCallback(myBA);
+		if (myBA.length > 0) _onDataCallback(myBA);
 		
 		// start timer again
 		_timer = new Timer(60);
@@ -118,13 +117,13 @@ class PeoteSocket
 		}
 	}
 	
-	public function writeBytes(ba:ByteArray):Void
+	public function writeBytes(ba:Array<Int>):Void
 	{	
 		// TODO: check blocking !
 		var end:Bool = false;
 		while (!end) {
 			try {
-				_socket.output.write(ba);
+				_socket.output.write(cast ba);
 				end = true;
 			}
 			catch (unknown : Dynamic)

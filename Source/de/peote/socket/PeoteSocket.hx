@@ -17,7 +17,7 @@ typedef PeoteSocket = de.peote.socket.flash.PeoteSocket;
 // wrapping around pre generated PeoteSocketBridge.swf
 
 #if js
-import lime.utils.ByteArray;
+
 @:native('PeoteSocket') extern class PeoteSocket
 {
 	public function new (o:Dynamic) {}
@@ -25,7 +25,7 @@ import lime.utils.ByteArray;
 	public function connect(server:String, port:Int):Void {}
 	public function close():Void {}
 	public function writeByte(b:Int):Void {}
-	public function writeBytes(data:ByteArray):Void {}
+	public function writeBytes(data:Array<Int>):Void {}
 	public function flush():Void {}	
 }
 #end
