@@ -9,4 +9,5 @@
 	<!-- openfl here to generate swf-bridge to use raw sockets in js -->
 	<haxelib name="openfl" />
 	
+	<haxeflag name="-dce" value="full" />
 </project>

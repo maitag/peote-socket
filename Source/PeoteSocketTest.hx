@@ -5,6 +5,9 @@ import haxe.Timer;
 
 #if flash
 import flash.utils.ByteArray;
+#else
+import haxe.io.Bytes;
+import haxe.io.BytesData;
 #end
 
 import de.peote.socket.PeoteSocket;
@@ -36,14 +39,14 @@ class PeoteSocketTest extends Application {
 	#if flash
 	public inline function onData(data:ByteArray):Void
 	{
-		trace("onData:" + data);
+		trace("onData:" + data.bytesAvailable);
 		peoteSocket.close();
 		peoteSocket.connect("192.168.1.50", 23);
 	}
 	#else
 	public inline function onData(data:Array<Int>):Void
 	{
-		trace("onData:" + data);
+		trace("onData:" + data );
 		peoteSocket.close();
 		peoteSocket.connect("192.168.1.50", 23);
 	}

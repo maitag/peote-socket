@@ -10,6 +10,7 @@ package;
  */       /*(play and wrapp around)*/  //o
 import flash.external.ExternalInterface;//o
 import flash.utils.ByteArray;
+import haxe.io.Bytes;
 
 import de.peote.socket.flash.bridge.PeoteSocket;
 
@@ -111,9 +112,11 @@ class PeoteSocketBridge {
         if (p != null) p.writeByte(byte);
     }
 	
-    public static function writeBytes(id:String, data:ByteArray) {
+    public static function writeBytes(id:String, data:Array<Int>) {
         var p:PeoteSocket = peoteSocket.get(id);
-        if (p != null) p.writeBytes(data);
+        var ba:ByteArray = new ByteArray();
+		for (i in 0...data.length) ba.writeByte(data[i]);
+		if (p != null) p.writeBytes(Bytes.ofData(ba));
     }
 	
     public static function flush(id:String) {

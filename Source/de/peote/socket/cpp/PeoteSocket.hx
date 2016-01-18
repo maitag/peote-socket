@@ -4,7 +4,7 @@ package de.peote.socket.cpp;
  * @author sylvio sell
  */
 
-import haxe.io.BytesData;
+import haxe.io.Bytes;
 import haxe.Timer;
 
 import sys.net.Socket;
@@ -117,18 +117,20 @@ class PeoteSocket
 		}
 	}
 	
-	public function writeBytes(ba:Array<Int>):Void
+	public function writeBytes(bytes:Bytes):Void
 	{	
 		// TODO: check blocking !
 		var end:Bool = false;
 		while (!end) {
 			try {
-				_socket.output.write(cast ba);
+				//_socket.output.write(cast ba);
+				_socket.output.write(bytes);
 				end = true;
 			}
 			catch (unknown : Dynamic)
 			{
-				_onErrorCallback("writeBytes(ba) exception: "+Std.string(unknown)+" end:"+end);
+				_onErrorCallback("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
+				//end = true;
 			}
 		}
 	}

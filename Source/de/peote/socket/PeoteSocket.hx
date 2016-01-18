@@ -1,4 +1,5 @@
 package de.peote.socket;
+import haxe.io.Bytes;
 /**
  *  /\/\/\                     ~^
  * @author Sylvio Sell - maitag

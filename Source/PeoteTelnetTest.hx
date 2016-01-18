@@ -3,6 +3,9 @@ package;
 import lime.app.Application;
 import lime.graphics.RenderContext;
 import haxe.Timer;
+#if flash
+import flash.utils.ByteArray;
+#end
 
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
@@ -36,7 +39,10 @@ class PeoteTelnetTest extends Application {
 	#if flash
 	public inline function onData(data:ByteArray):Void
 	{
-		peoteTelnet.parseTelnetData( data, remoteInput );
+		var bytes:Array<Int> = new Array<Int>();
+		for( i in 0...data.bytesAvailable ) bytes.push( data.readUnsignedByte() );
+
+		peoteTelnet.parseTelnetData( bytes, remoteInput );
 	}
 	#else
 	public inline function onData(data:Array<Int>):Void

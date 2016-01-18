@@ -14,6 +14,7 @@ import flash.events.SecurityErrorEvent;
 import flash.utils.Timer;
 import flash.events.TimerEvent;
 
+import haxe.io.Bytes;
 //import openfl.system.Security;
 
 class PeoteSocket 
@@ -36,7 +37,8 @@ class PeoteSocket
 		
 		_socket = new Socket();
 		
-		_timer = new Timer(0, 42);
+		//_timer = new Timer(0, 42);
+		_timer = new Timer(0, 1);
 		_timer.addEventListener(TimerEvent.TIMER, function (_) {
 			
 			/*var anz_bytes:Int = _socket.bytesAvailable;
@@ -88,9 +90,9 @@ class PeoteSocket
 		try _socket.writeByte(b) catch (unknown : Dynamic) _onErrorCallback("ERROR: _socket.writeByte(ba) :"+ unknown);
 	}
 	
-	public function writeBytes(ba:ByteArray):Void
+	public function writeBytes(ba:Bytes):Void
 	{
-		try _socket.writeBytes(ba) catch (unknown : Dynamic) _onErrorCallback("ERROR: _socket.writeBytes(ba) :"+ unknown);
+		try _socket.writeBytes(ba.getData()) catch (unknown : Dynamic) _onErrorCallback("ERROR: _socket.writeBytes(ba) :"+ unknown);
 	}
 	
 	public function flush():Void

@@ -6,6 +6,8 @@ package de.peote.telnet;
  * @author Sylvio Sell - long live haxe :)=
  */
 
+import haxe.io.Bytes;
+import haxe.io.BytesData;
 import haxe.remoting.FlashJsConnection;
 
 import de.peote.socket.PeoteSocket;
@@ -50,9 +52,15 @@ class PeoteTelnet
 		peoteSocket.flush();
 	}
 	
-	public inline function writeBytes(ba:Array<Int>):Void
+	public inline function writeBytes(bytes:Bytes):Void
 	{
-		peoteSocket.writeBytes(ba);
+		#if js
+		var b:Array<Int> = new Array<Int>();
+		for (i in 0...bytes.length) b.push(bytes.get(i));
+		peoteSocket.writeBytes(b);
+		#else
+		peoteSocket.writeBytes(bytes);
+		#end
 		peoteSocket.flush();
 	}
 	
