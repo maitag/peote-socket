@@ -30,7 +30,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "93", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
+	ApplicationMain.config = { build : "188", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1115,11 +1115,11 @@ lime_app_Application.prototype = $extend(lime_app_Module.prototype,{
 var PeoteTelnetTest = function() {
 	lime_app_Application.call(this);
 	this.peoteSocket = new PeoteSocket({ onConnect : function(connected,msg) {
-		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteTelnetTest.hx", lineNumber : 24, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteTelnetTest.hx", lineNumber : 25, className : "PeoteTelnetTest", methodName : "new"});
 	}, onClose : function(msg1) {
-		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteTelnetTest.hx", lineNumber : 27, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteTelnetTest.hx", lineNumber : 28, className : "PeoteTelnetTest", methodName : "new"});
 	}, onError : function(msg2) {
-		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteTelnetTest.hx", lineNumber : 30, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteTelnetTest.hx", lineNumber : 31, className : "PeoteTelnetTest", methodName : "new"});
 	}, onData : $bind(this,this.onData)});
 	this.peoteTelnet = new de_peote_telnet_PeoteTelnet(this.peoteSocket);
 	this.peoteSocket.connect("192.168.1.50",23);
@@ -1129,10 +1129,17 @@ PeoteTelnetTest.__name__ = true;
 PeoteTelnetTest.__super__ = lime_app_Application;
 PeoteTelnetTest.prototype = $extend(lime_app_Application.prototype,{
 	onData: function(data) {
-		this.peoteTelnet.parseTelnetData(data,$bind(this,this.remoteInput));
+		var bytes = haxe_io_Bytes.ofData(new ArrayBuffer(data.length));
+		var _g1 = 0;
+		var _g = data.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			bytes.b[i] = data[i] & 255;
+		}
+		this.peoteTelnet.parseTelnetData(bytes,$bind(this,this.remoteInput));
 	}
 	,remoteInput: function(b) {
-		if(b != 13) haxe_Log.trace(String.fromCharCode(b),{ fileName : "PeoteTelnetTest.hx", lineNumber : 56, className : "PeoteTelnetTest", methodName : "remoteInput"});
+		if(b != 13) haxe_Log.trace(String.fromCharCode(b),{ fileName : "PeoteTelnetTest.hx", lineNumber : 72, className : "PeoteTelnetTest", methodName : "remoteInput"});
 	}
 	,__class__: PeoteTelnetTest
 });
@@ -1252,13 +1259,14 @@ de_peote_telnet_PeoteTelnet.prototype = {
 		this.peoteSocket.writeBytes(b);
 		this.peoteSocket.flush();
 	}
-	,parseTelnetData: function(myBA,remoteInput) {
-		var _g = 0;
-		while(_g < myBA.length) {
-			var b = myBA[_g];
-			++_g;
-			var _g1 = this.state;
-			switch(_g1) {
+	,parseTelnetData: function(bytes,remoteInput) {
+		var _g1 = 0;
+		var _g = bytes.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var b = bytes.b[i];
+			var _g2 = this.state;
+			switch(_g2) {
 			case 0:
 				if(b == de_peote_telnet_PeoteTelnet.IAC) this.state = 1; else if(b != de_peote_telnet_PeoteTelnet.NOP) remoteInput(b);
 				break;
@@ -1427,6 +1435,94 @@ haxe_Timer.prototype = {
 	}
 	,__class__: haxe_Timer
 };
+var haxe_io_Bytes = function(data) {
+	this.length = data.byteLength;
+	this.b = new Uint8Array(data);
+	this.b.bufferValue = data;
+	data.hxBytes = this;
+	data.bytes = this.b;
+};
+$hxClasses["haxe.io.Bytes"] = haxe_io_Bytes;
+haxe_io_Bytes.__name__ = true;
+haxe_io_Bytes.alloc = function(length) {
+	return new haxe_io_Bytes(new ArrayBuffer(length));
+};
+haxe_io_Bytes.ofString = function(s) {
+	var a = [];
+	var i = 0;
+	while(i < s.length) {
+		var c = StringTools.fastCodeAt(s,i++);
+		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
+		if(c <= 127) a.push(c); else if(c <= 2047) {
+			a.push(192 | c >> 6);
+			a.push(128 | c & 63);
+		} else if(c <= 65535) {
+			a.push(224 | c >> 12);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		} else {
+			a.push(240 | c >> 18);
+			a.push(128 | c >> 12 & 63);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		}
+	}
+	return new haxe_io_Bytes(new Uint8Array(a).buffer);
+};
+haxe_io_Bytes.ofData = function(b) {
+	var hb = b.hxBytes;
+	if(hb != null) return hb;
+	return new haxe_io_Bytes(b);
+};
+haxe_io_Bytes.prototype = {
+	get: function(pos) {
+		return this.b[pos];
+	}
+	,set: function(pos,v) {
+		this.b[pos] = v & 255;
+	}
+	,blit: function(pos,src,srcpos,len) {
+		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
+	}
+	,setUInt16: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setUint16(pos,v,true);
+	}
+	,setInt32: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setInt32(pos,v,true);
+	}
+	,getString: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		var s = "";
+		var b = this.b;
+		var fcc = String.fromCharCode;
+		var i = pos;
+		var max = pos + len;
+		while(i < max) {
+			var c = b[i++];
+			if(c < 128) {
+				if(c == 0) break;
+				s += fcc(c);
+			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
+				var c2 = b[i++];
+				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
+			} else {
+				var c21 = b[i++];
+				var c3 = b[i++];
+				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
+				s += fcc((u >> 10) + 55232);
+				s += fcc(u & 1023 | 56320);
+			}
+		}
+		return s;
+	}
+	,toString: function() {
+		return this.getString(0,this.length);
+	}
+	,__class__: haxe_io_Bytes
+};
 var haxe_crypto_BaseCode = function(base) {
 	var len = base.length;
 	var nbits = 1;
@@ -1554,94 +1650,6 @@ haxe_ds_StringMap.prototype = {
 		return new haxe_ds__$StringMap_StringMapIterator(this,this.arrayKeys());
 	}
 	,__class__: haxe_ds_StringMap
-};
-var haxe_io_Bytes = function(data) {
-	this.length = data.byteLength;
-	this.b = new Uint8Array(data);
-	this.b.bufferValue = data;
-	data.hxBytes = this;
-	data.bytes = this.b;
-};
-$hxClasses["haxe.io.Bytes"] = haxe_io_Bytes;
-haxe_io_Bytes.__name__ = true;
-haxe_io_Bytes.alloc = function(length) {
-	return new haxe_io_Bytes(new ArrayBuffer(length));
-};
-haxe_io_Bytes.ofString = function(s) {
-	var a = [];
-	var i = 0;
-	while(i < s.length) {
-		var c = StringTools.fastCodeAt(s,i++);
-		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
-		if(c <= 127) a.push(c); else if(c <= 2047) {
-			a.push(192 | c >> 6);
-			a.push(128 | c & 63);
-		} else if(c <= 65535) {
-			a.push(224 | c >> 12);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		} else {
-			a.push(240 | c >> 18);
-			a.push(128 | c >> 12 & 63);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		}
-	}
-	return new haxe_io_Bytes(new Uint8Array(a).buffer);
-};
-haxe_io_Bytes.ofData = function(b) {
-	var hb = b.hxBytes;
-	if(hb != null) return hb;
-	return new haxe_io_Bytes(b);
-};
-haxe_io_Bytes.prototype = {
-	get: function(pos) {
-		return this.b[pos];
-	}
-	,set: function(pos,v) {
-		this.b[pos] = v & 255;
-	}
-	,blit: function(pos,src,srcpos,len) {
-		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
-	}
-	,setUInt16: function(pos,v) {
-		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
-		this.data.setUint16(pos,v,true);
-	}
-	,setInt32: function(pos,v) {
-		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
-		this.data.setInt32(pos,v,true);
-	}
-	,getString: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		var s = "";
-		var b = this.b;
-		var fcc = String.fromCharCode;
-		var i = pos;
-		var max = pos + len;
-		while(i < max) {
-			var c = b[i++];
-			if(c < 128) {
-				if(c == 0) break;
-				s += fcc(c);
-			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-				var c2 = b[i++];
-				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-			} else {
-				var c21 = b[i++];
-				var c3 = b[i++];
-				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
-				s += fcc((u >> 10) + 55232);
-				s += fcc(u & 1023 | 56320);
-			}
-		}
-		return s;
-	}
-	,toString: function() {
-		return this.getString(0,this.length);
-	}
-	,__class__: haxe_io_Bytes
 };
 var haxe_io_Eof = function() { };
 $hxClasses["haxe.io.Eof"] = haxe_io_Eof;

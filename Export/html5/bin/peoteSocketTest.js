@@ -30,7 +30,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "87", company : "Sylvio Sell - maitag", file : "peoteSocketTest", fps : 60, name : "PeoteSocketTest", orientation : "", packageName : "de.peote.socket", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteSocketTest", vsync : false, width : 0, x : null, y : null}]};
+	ApplicationMain.config = { build : "187", company : "Sylvio Sell - maitag", file : "peoteSocketTest", fps : 60, name : "PeoteSocketTest", orientation : "", packageName : "de.peote.socket", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteSocketTest", vsync : false, width : 0, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1115,11 +1115,11 @@ lime_app_Application.prototype = $extend(lime_app_Module.prototype,{
 var PeoteSocketTest = function() {
 	lime_app_Application.call(this);
 	this.peoteSocket = new PeoteSocket({ onConnect : function(connected,msg) {
-		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteSocketTest.hx", lineNumber : 25, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteSocketTest.hx", lineNumber : 23, className : "PeoteSocketTest", methodName : "new"});
 	}, onClose : function(msg1) {
-		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteSocketTest.hx", lineNumber : 28, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteSocketTest.hx", lineNumber : 26, className : "PeoteSocketTest", methodName : "new"});
 	}, onError : function(msg2) {
-		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteSocketTest.hx", lineNumber : 31, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteSocketTest.hx", lineNumber : 29, className : "PeoteSocketTest", methodName : "new"});
 	}, onData : $bind(this,this.onData)});
 	this.peoteSocket.connect("192.168.1.50",23);
 };
@@ -1128,7 +1128,24 @@ PeoteSocketTest.__name__ = true;
 PeoteSocketTest.__super__ = lime_app_Application;
 PeoteSocketTest.prototype = $extend(lime_app_Application.prototype,{
 	onData: function(data) {
-		haxe_Log.trace("onData:" + Std.string(data),{ fileName : "PeoteSocketTest.hx", lineNumber : 49, className : "PeoteSocketTest", methodName : "onData"});
+		var bytes = haxe_io_Bytes.ofData(new ArrayBuffer(data.length));
+		var _g1 = 0;
+		var _g = data.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			bytes.b[i] = data[i] & 255;
+		}
+		this.debug_output(bytes);
+	}
+	,debug_output: function(bytes) {
+		var s = "";
+		var _g1 = 0;
+		var _g = bytes.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			s += bytes.b[i] + " ";
+		}
+		haxe_Log.trace("onData:" + s,{ fileName : "PeoteSocketTest.hx", lineNumber : 54, className : "PeoteSocketTest", methodName : "debug_output"});
 		this.peoteSocket.close();
 		this.peoteSocket.connect("192.168.1.50",23);
 	}

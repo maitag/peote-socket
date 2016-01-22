@@ -9,6 +9,7 @@ import flash.external.ExternalInterface;
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+//import haxe.crypto.Base64;
 
 class PeoteSocket extends de.peote.socket.flash.PeoteSocket
 {
@@ -28,14 +29,16 @@ class PeoteSocket extends de.peote.socket.flash.PeoteSocket
 	}
 
 	// PeoteSocketBridge Event Callbacks - flashplayer calls Javascript-Functions back :)=
-	public inline function onData(data:ByteArray):Void
-	{	//ExternalInterface.call("(function(byte){ console.log('len',byte); })", data.length ) ;
+	public inline function onData(bytes:Bytes):Void
+	{	
+		//var data:Array<Int> = new Array<Int>();
+		//for( i in 0...bytes.length ) data.push( bytes.get(i) );
+		//ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id, data ) ;
+		ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id,
+			[ for( i in 0...bytes.length ) bytes.get(i) ]
+		) ;
 		
-		var bytes:Array<Int> = new Array<Int>();
-		for( i in 0...data.bytesAvailable ) bytes.push( data.readUnsignedByte() );
-		
-		//ExternalInterface.call("(function(bytes){ console.log(bytes); })", bytes ) ;		
-		ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id, bytes ) ;
+		//ExternalInterface.call("(function(id, bytes){ var inst = window.PeoteSocket._instances[id]; if (inst.onData) inst.onData(bytes); })", id, Base64.encode(bytes) ) ;
 	}
 
 	public inline function onConnect(connected:Bool, msg:String):Void 

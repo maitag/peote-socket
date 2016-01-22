@@ -4,7 +4,6 @@ package de.peote.socket.flash;
  */
 
 import flash.net.Socket;
-import flash.utils.ByteArray;
 import flash.events.EventDispatcher;
 import flash.events.Event;
 import flash.events.ErrorEvent;
@@ -14,13 +13,13 @@ import flash.events.SecurityErrorEvent;
 import flash.utils.Timer;
 import flash.events.TimerEvent;
 
+import haxe.io.BytesData;
 import haxe.io.Bytes;
-//import openfl.system.Security;
 
 class PeoteSocket 
 {
 	private var _onConnectCallback:Bool -> String -> Void;
-	private var _onDataCallback:ByteArray -> Void;
+	private var _onDataCallback:Bytes -> Void;
 	private var _onCloseCallback:String -> Void;
 	private var _onErrorCallback:String -> Void;
 	
@@ -38,31 +37,27 @@ class PeoteSocket
 		_socket = new Socket();
 		
 		//_timer = new Timer(0, 42);
-		_timer = new Timer(0, 1);
+		/*_timer = new Timer(0, 1);
 		_timer.addEventListener(TimerEvent.TIMER, function (_) {
-			
-			/*var anz_bytes:Int = _socket.bytesAvailable;
-			if (anz_bytes>0) {
-				var myBA:ByteArray = new ByteArray();
-				try {_socket.readBytes(myBA);} catch (unknown : Dynamic) { trace("ERROR: _socket.readBytes(myBA) :"+ unknown); }
-				// myBA.position = 0;
-				_onDataCallback(myBA, anz_bytes);
-			}*/
 			while (_socket.bytesAvailable>0) {
-				var myBA:ByteArray = new ByteArray();
+				var myBA:BytesData = new BytesData();
 				try {_socket.readBytes(myBA);} catch (unknown : Dynamic) { _onErrorCallback("READSOCKET-ERROR: _socket.readBytes(myBA) :"+ unknown); }
 				// myBA.position = 0; 
-				_onDataCallback(myBA);
+				_onDataCallback(Bytes.ofData(myBA));
 			}
 		});
-
+		*/
 		if (_onConnectCallback != null) _socket.addEventListener(Event.CONNECT, function(e:Event) {
 			_onConnectCallback(_socket.connected, e.toString());
 		});
 
 		if (_onDataCallback != null) _socket.addEventListener(ProgressEvent.SOCKET_DATA, function(e:ProgressEvent):Void {
-			_timer.reset();
-			_timer.start();
+			//_timer.reset();
+			//_timer.start();
+			var myBA:BytesData = new BytesData();
+			try { _socket.readBytes(myBA); } catch (unknown : Dynamic) { _onErrorCallback("READSOCKET-ERROR: _socket.readBytes(myBA) :" + unknown); }
+			_onDataCallback(Bytes.ofData(myBA));
+			
 		});
 
 		if (_onCloseCallback != null) _socket.addEventListener(Event.CLOSE, function(e:Event):Void { _onCloseCallback(e.toString()); });
@@ -93,6 +88,17 @@ class PeoteSocket
 	public function writeBytes(ba:Bytes):Void
 	{
 		try _socket.writeBytes(ba.getData()) catch (unknown : Dynamic) _onErrorCallback("ERROR: _socket.writeBytes(ba) :"+ unknown);
+	}
+	
+	public function writeFullBytes(bytes:Bytes, pos:Int, len:Int):Void
+	{
+		var tmp_ba:BytesData = new BytesData(); // TODO: optimize
+		// tmp_ba.clear();
+		var ba:BytesData = bytes.getData();
+		ba.position = pos;
+		ba.readBytes(tmp_ba, 0, len);
+				
+		try _socket.writeBytes(tmp_ba) catch (unknown : Dynamic) _onErrorCallback("ERROR: _socket.writeFullBytes() :"+ unknown);
 	}
 	
 	public function flush():Void

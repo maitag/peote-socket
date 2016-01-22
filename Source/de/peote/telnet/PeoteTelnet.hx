@@ -55,21 +55,19 @@ class PeoteTelnet
 	public inline function writeBytes(bytes:Bytes):Void
 	{
 		#if js
-		var b:Array<Int> = new Array<Int>();
-		for (i in 0...bytes.length) b.push(bytes.get(i));
-		peoteSocket.writeBytes(b);
+		peoteSocket.writeBytes([ for (i in 0...bytes.length) bytes.get(i) ]);
 		#else
 		peoteSocket.writeBytes(bytes);
 		#end
 		peoteSocket.flush();
 	}
 	
-	public inline function parseTelnetData(myBA:Array<Int>, remoteInput:Int->Void):Void
+	public inline function parseTelnetData(bytes:Bytes, remoteInput:Int->Void):Void
 	{
-		for (b in myBA)
+		for (i in 0...bytes.length)
 		{
-			//var b:Int = input.readUnsignedByte();
-			//trace(b, input.bytesAvailable );
+			var b:Int = bytes.get(i);
+			
 			switch (state)
 			{
 				case 0 :

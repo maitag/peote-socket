@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="PeoteSocketTest" package="de.peote.socket" version="0.1.0" company="Sylvio Sell - maitag" />
+	<meta title="PeoteSocketTest" package="de.peote.socket" version="0.2.0" company="Sylvio Sell - maitag" />
 	<app main="PeoteSocketTest" path="Export" file="peoteSocketTest" />
 	
 	<source path="Source" />

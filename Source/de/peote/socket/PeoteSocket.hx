@@ -1,5 +1,5 @@
 package de.peote.socket;
-import haxe.io.Bytes;
+
 /**
  *  /\/\/\                     ~^
  * @author Sylvio Sell - maitag
@@ -21,7 +21,7 @@ typedef PeoteSocket = de.peote.socket.flash.PeoteSocket;
 
 @:native('PeoteSocket') extern class PeoteSocket
 {
-	public function new (o:Dynamic) {}
+	public function new (param:Dynamic) {}
 
 	public function connect(server:String, port:Int):Void {}
 	public function close():Void {}
