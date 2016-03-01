@@ -12,6 +12,8 @@
 	
 	
 	<script src="swfobject.js" type="text/javascript"></script>
+	<script src="PeoteBytesInput.js" type="text/javascript"></script>
+	<script src="PeoteBytesOutput.js" type="text/javascript"></script>
 	
 	<script>
 		// starter here -> swfobject for raw socket wrapper is available
@@ -29,12 +31,24 @@
 				onError: function(msg) {
 					console.log("onError:"+msg);
 				},
-				onData: function(data) {
-					var arr = new Uint8Array(data);
+				onData: function(peoteBytes) {
+					//var arr = new Uint8Array(data);
 					console.log("onData:");
-					console.log(arr);
+					var input = new PeoteBytesInput(peoteBytes);
+					console.log( "data bytes length = " + input.length);
+					while (input.position < input.length)
+					{
+						console.log(input.position + ":" + input.readByte());
+					}
+					//console.log(input.readInt16());
+					//console.log(input.readInt32());
+					//console.log(input.readFloat());
+					//console.log(input.readDouble());
+					//console.log(input.readString());
+
 				}
 			});
+			
 			peoteSocket.connect("192.168.1.50", 23);
 		}
 

@@ -1,10 +1,12 @@
 package;
 
 import lime.app.Application;
-import haxe.Timer;
 
-import haxe.io.Bytes;
-import haxe.io.BytesData;
+import de.peote.io.PeoteBytes;
+import de.peote.io.PeoteBytesInput;
+import de.peote.io.PeoteBytesOutput;
+/*import haxe.io.Bytes;
+import haxe.io.BytesData;*/
 
 
 import de.peote.socket.PeoteSocket;
@@ -19,7 +21,8 @@ class PeoteSocketTest extends Application {
 		
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
-					trace("onConnect:"+connected+" - "+msg);
+					trace("onConnect:" + connected + " - " + msg);
+					//sendTestData();
 				},
 				onClose: function(msg) {
 					trace("onClose:"+msg);
@@ -27,32 +30,44 @@ class PeoteSocketTest extends Application {
 				onError: function(msg) {
 					trace("onError:"+msg);
 				},
-				onData: this.onData
+				onData: onData
 		});
 		peoteSocket.connect("192.168.1.50", 23);
 		
 	}
 	
-	#if js
-	public inline function onData(data:Array<Int>):Void {
-		var bytes:Bytes = Bytes.ofData(new BytesData(data.length));
-		for (i in 0...data.length) bytes.set(i, data[i]);
-		debug_output( bytes );
+	public inline function sendTestData():Void
+	{	
+		var output:PeoteBytesOutput = new PeoteBytesOutput();
+		
+		output.writeByte(255);
+		output.writeInt16(12345);
+		output.writeInt32(123456789);
+		output.writeFloat(1.2345678);
+		output.writeDouble(1.2345678901234567890123456789);
+		output.writeString("Hello Server");
+		
+		peoteSocket.writeBytes( output.getBytes() ); // send chunk
 	}
-	#else
-
-	public inline function onData(bytes:Bytes):Void	{
-		debug_output(bytes);
-	}
-	#end
 	
-	public inline function debug_output(bytes:Bytes):Void 
+	public inline function onData(peoteBytes:PeoteBytes ):Void 
 	{
-		var s:String = "";
-		for (i in 0 ...bytes.length) s += bytes.get(i)+" ";
-		trace("onData:" + s);
-		peoteSocket.close();
-		peoteSocket.connect("192.168.1.50", 23);
+		trace("onData:");
+
+		var input:PeoteBytesInput = new PeoteBytesInput(peoteBytes);
+		trace( "data bytes length = " + input.length);
+		while (input.position < input.length)
+		{
+			trace(input.position + ":" + input.readByte());
+		}
+		/*
+		trace(input.readInt16());
+		trace(input.readInt32());
+		trace(input.readFloat());
+		trace(input.readDouble());
+		trace(input.readString());
+		*/
+		
 	}
 
 }

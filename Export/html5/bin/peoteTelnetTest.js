@@ -30,7 +30,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "188", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
+	ApplicationMain.config = { build : "254", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.2.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1115,11 +1115,11 @@ lime_app_Application.prototype = $extend(lime_app_Module.prototype,{
 var PeoteTelnetTest = function() {
 	lime_app_Application.call(this);
 	this.peoteSocket = new PeoteSocket({ onConnect : function(connected,msg) {
-		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteTelnetTest.hx", lineNumber : 25, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteTelnetTest.hx", lineNumber : 22, className : "PeoteTelnetTest", methodName : "new"});
 	}, onClose : function(msg1) {
-		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteTelnetTest.hx", lineNumber : 28, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteTelnetTest.hx", lineNumber : 25, className : "PeoteTelnetTest", methodName : "new"});
 	}, onError : function(msg2) {
-		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteTelnetTest.hx", lineNumber : 31, className : "PeoteTelnetTest", methodName : "new"});
+		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteTelnetTest.hx", lineNumber : 28, className : "PeoteTelnetTest", methodName : "new"});
 	}, onData : $bind(this,this.onData)});
 	this.peoteTelnet = new de_peote_telnet_PeoteTelnet(this.peoteSocket);
 	this.peoteSocket.connect("192.168.1.50",23);
@@ -1128,18 +1128,12 @@ $hxClasses["PeoteTelnetTest"] = PeoteTelnetTest;
 PeoteTelnetTest.__name__ = true;
 PeoteTelnetTest.__super__ = lime_app_Application;
 PeoteTelnetTest.prototype = $extend(lime_app_Application.prototype,{
-	onData: function(data) {
-		var bytes = haxe_io_Bytes.ofData(new ArrayBuffer(data.length));
-		var _g1 = 0;
-		var _g = data.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			bytes.b[i] = data[i] & 255;
-		}
-		this.peoteTelnet.parseTelnetData(bytes,$bind(this,this.remoteInput));
+	onData: function(peoteBytes) {
+		var input = new de_peote_io_js_PeoteBytesInput(peoteBytes);
+		this.peoteTelnet.parseTelnetData(input,$bind(this,this.remoteInput));
 	}
 	,remoteInput: function(b) {
-		if(b != 13) haxe_Log.trace(String.fromCharCode(b),{ fileName : "PeoteTelnetTest.hx", lineNumber : 72, className : "PeoteTelnetTest", methodName : "remoteInput"});
+		if(b != 13) haxe_Log.trace(String.fromCharCode(b),{ fileName : "PeoteTelnetTest.hx", lineNumber : 46, className : "PeoteTelnetTest", methodName : "remoteInput"});
 	}
 	,__class__: PeoteTelnetTest
 });
@@ -1233,6 +1227,73 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
 };
+var de_peote_io_js_PeoteBytesInput = $hx_exports.PeoteBytesInput = function(bytes) {
+	this.position = 0;
+	this.length = 0;
+	this.bytes = bytes;
+	this.length = bytes.length;
+};
+$hxClasses["de.peote.io.js.PeoteBytesInput"] = de_peote_io_js_PeoteBytesInput;
+de_peote_io_js_PeoteBytesInput.__name__ = true;
+de_peote_io_js_PeoteBytesInput.main = function() {
+};
+de_peote_io_js_PeoteBytesInput.prototype = {
+	readByte: function() {
+		return this.bytes[this.position++];
+	}
+	,readInt16: function() {
+		this.position += 2;
+		return this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+	}
+	,readInt32: function() {
+		this.position += 4;
+		return this.bytes[this.position - 1] << 24 | this.bytes[this.position - 2] << 16 | this.bytes[this.position - 3] << 8 | this.bytes[this.position - 4];
+	}
+	,readFloat: function() {
+		var b = haxe_io_Bytes.alloc(4);
+		b.setInt32(0,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		return b.getFloat(0);
+	}
+	,readDouble: function() {
+		var b = haxe_io_Bytes.alloc(8);
+		b.setInt32(0,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		b.setInt32(4,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		return b.getDouble(0);
+	}
+	,readString: function() {
+		var len;
+		this.position += 2;
+		len = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		var b = haxe_io_Bytes.alloc(len * 4);
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			b.setInt32(i * 4,(function($this) {
+				var $r;
+				$this.position += 4;
+				$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+				return $r;
+			}(this)));
+		}
+		return b.getString(0,len);
+	}
+	,__class__: de_peote_io_js_PeoteBytesInput
+};
 var de_peote_telnet_PeoteTelnet = function(peoteSocket,width,height) {
 	if(height == null) height = 46;
 	if(width == null) width = 107;
@@ -1249,22 +1310,28 @@ de_peote_telnet_PeoteTelnet.prototype = {
 		this.peoteSocket.flush();
 	}
 	,writeBytes: function(bytes) {
-		var b = [];
-		var _g1 = 0;
-		var _g = bytes.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			b.push(bytes.b[i]);
-		}
-		this.peoteSocket.writeBytes(b);
+		this.peoteSocket.writeBytes((function($this) {
+			var $r;
+			var _g = [];
+			{
+				var _g2 = 0;
+				var _g1 = bytes.length;
+				while(_g2 < _g1) {
+					var i = _g2++;
+					_g.push(bytes.b[i]);
+				}
+			}
+			$r = _g;
+			return $r;
+		}(this)));
 		this.peoteSocket.flush();
 	}
-	,parseTelnetData: function(bytes,remoteInput) {
+	,parseTelnetData: function(input,remoteInput) {
 		var _g1 = 0;
-		var _g = bytes.length;
+		var _g = input.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var b = bytes.b[i];
+			var b = input.bytes[input.position++];
 			var _g2 = this.state;
 			switch(_g2) {
 			case 0:
@@ -1435,94 +1502,6 @@ haxe_Timer.prototype = {
 	}
 	,__class__: haxe_Timer
 };
-var haxe_io_Bytes = function(data) {
-	this.length = data.byteLength;
-	this.b = new Uint8Array(data);
-	this.b.bufferValue = data;
-	data.hxBytes = this;
-	data.bytes = this.b;
-};
-$hxClasses["haxe.io.Bytes"] = haxe_io_Bytes;
-haxe_io_Bytes.__name__ = true;
-haxe_io_Bytes.alloc = function(length) {
-	return new haxe_io_Bytes(new ArrayBuffer(length));
-};
-haxe_io_Bytes.ofString = function(s) {
-	var a = [];
-	var i = 0;
-	while(i < s.length) {
-		var c = StringTools.fastCodeAt(s,i++);
-		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
-		if(c <= 127) a.push(c); else if(c <= 2047) {
-			a.push(192 | c >> 6);
-			a.push(128 | c & 63);
-		} else if(c <= 65535) {
-			a.push(224 | c >> 12);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		} else {
-			a.push(240 | c >> 18);
-			a.push(128 | c >> 12 & 63);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		}
-	}
-	return new haxe_io_Bytes(new Uint8Array(a).buffer);
-};
-haxe_io_Bytes.ofData = function(b) {
-	var hb = b.hxBytes;
-	if(hb != null) return hb;
-	return new haxe_io_Bytes(b);
-};
-haxe_io_Bytes.prototype = {
-	get: function(pos) {
-		return this.b[pos];
-	}
-	,set: function(pos,v) {
-		this.b[pos] = v & 255;
-	}
-	,blit: function(pos,src,srcpos,len) {
-		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
-	}
-	,setUInt16: function(pos,v) {
-		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
-		this.data.setUint16(pos,v,true);
-	}
-	,setInt32: function(pos,v) {
-		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
-		this.data.setInt32(pos,v,true);
-	}
-	,getString: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		var s = "";
-		var b = this.b;
-		var fcc = String.fromCharCode;
-		var i = pos;
-		var max = pos + len;
-		while(i < max) {
-			var c = b[i++];
-			if(c < 128) {
-				if(c == 0) break;
-				s += fcc(c);
-			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-				var c2 = b[i++];
-				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-			} else {
-				var c21 = b[i++];
-				var c3 = b[i++];
-				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
-				s += fcc((u >> 10) + 55232);
-				s += fcc(u & 1023 | 56320);
-			}
-		}
-		return s;
-	}
-	,toString: function() {
-		return this.getString(0,this.length);
-	}
-	,__class__: haxe_io_Bytes
-};
 var haxe_crypto_BaseCode = function(base) {
 	var len = base.length;
 	var nbits = 1;
@@ -1650,6 +1629,102 @@ haxe_ds_StringMap.prototype = {
 		return new haxe_ds__$StringMap_StringMapIterator(this,this.arrayKeys());
 	}
 	,__class__: haxe_ds_StringMap
+};
+var haxe_io_Bytes = function(data) {
+	this.length = data.byteLength;
+	this.b = new Uint8Array(data);
+	this.b.bufferValue = data;
+	data.hxBytes = this;
+	data.bytes = this.b;
+};
+$hxClasses["haxe.io.Bytes"] = haxe_io_Bytes;
+haxe_io_Bytes.__name__ = true;
+haxe_io_Bytes.alloc = function(length) {
+	return new haxe_io_Bytes(new ArrayBuffer(length));
+};
+haxe_io_Bytes.ofString = function(s) {
+	var a = [];
+	var i = 0;
+	while(i < s.length) {
+		var c = StringTools.fastCodeAt(s,i++);
+		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
+		if(c <= 127) a.push(c); else if(c <= 2047) {
+			a.push(192 | c >> 6);
+			a.push(128 | c & 63);
+		} else if(c <= 65535) {
+			a.push(224 | c >> 12);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		} else {
+			a.push(240 | c >> 18);
+			a.push(128 | c >> 12 & 63);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		}
+	}
+	return new haxe_io_Bytes(new Uint8Array(a).buffer);
+};
+haxe_io_Bytes.ofData = function(b) {
+	var hb = b.hxBytes;
+	if(hb != null) return hb;
+	return new haxe_io_Bytes(b);
+};
+haxe_io_Bytes.prototype = {
+	get: function(pos) {
+		return this.b[pos];
+	}
+	,set: function(pos,v) {
+		this.b[pos] = v & 255;
+	}
+	,blit: function(pos,src,srcpos,len) {
+		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
+	}
+	,getDouble: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat64(pos,true);
+	}
+	,getFloat: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat32(pos,true);
+	}
+	,setUInt16: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setUint16(pos,v,true);
+	}
+	,setInt32: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setInt32(pos,v,true);
+	}
+	,getString: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		var s = "";
+		var b = this.b;
+		var fcc = String.fromCharCode;
+		var i = pos;
+		var max = pos + len;
+		while(i < max) {
+			var c = b[i++];
+			if(c < 128) {
+				if(c == 0) break;
+				s += fcc(c);
+			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
+				var c2 = b[i++];
+				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
+			} else {
+				var c21 = b[i++];
+				var c3 = b[i++];
+				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
+				s += fcc((u >> 10) + 55232);
+				s += fcc(u & 1023 | 56320);
+			}
+		}
+		return s;
+	}
+	,toString: function() {
+		return this.getString(0,this.length);
+	}
+	,__class__: haxe_io_Bytes
 };
 var haxe_io_Eof = function() { };
 $hxClasses["haxe.io.Eof"] = haxe_io_Eof;
@@ -2648,7 +2723,13 @@ lime__$backend_html5_HTML5Application.prototype = {
 			var keyCode = this.convertKeyCode(event.keyCode != null?event.keyCode:event.which);
 			var modifier;
 			modifier = (event.shiftKey?3:0) | (event.ctrlKey?192:0) | (event.altKey?768:0) | (event.metaKey?3072:0);
-			if(event.type == "keydown") this.parent.windows[0].onKeyDown.dispatch(keyCode,modifier); else this.parent.windows[0].onKeyUp.dispatch(keyCode,modifier);
+			if(event.type == "keydown") {
+				this.parent.windows[0].onKeyDown.dispatch(keyCode,modifier);
+				if(this.parent.windows[0].onKeyDown.canceled) event.preventDefault();
+			} else {
+				this.parent.windows[0].onKeyUp.dispatch(keyCode,modifier);
+				if(this.parent.windows[0].onKeyUp.canceled) event.preventDefault();
+			}
 		}
 	}
 	,handleWindowEvent: function(event) {
@@ -2877,6 +2958,20 @@ lime__$backend_html5_HTML5Renderer.prototype = {
 			break;
 		default:
 		}
+	}
+	,readPixels: function(rect) {
+		if(this.parent.window.backend.canvas != null) {
+			if(rect == null) rect = new lime_math_Rectangle(0,0,this.parent.window.backend.canvas.width,this.parent.window.backend.canvas.height); else rect.__contract(0,0,this.parent.window.backend.canvas.width,this.parent.window.backend.canvas.height);
+			if(rect.width > 0 && rect.height > 0) {
+				var canvas = window.document.createElement("canvas");
+				canvas.width = rect.width | 0;
+				canvas.height = rect.height | 0;
+				var context = canvas.getContext("2d");
+				context.drawImage(this.parent.window.backend.canvas,-rect.x,-rect.y);
+				return lime_graphics_Image.fromCanvas(canvas);
+			}
+		}
+		return null;
 	}
 	,render: function() {
 	}
@@ -3164,6 +3259,9 @@ lime__$backend_html5_HTML5Window.prototype = {
 	}
 	,resize: function(width,height) {
 	}
+	,setBorderless: function(value) {
+		return value;
+	}
 	,setEnableTextEvents: function(value) {
 		if(value) {
 			if(lime__$backend_html5_HTML5Window.textInput == null) {
@@ -3209,6 +3307,9 @@ lime__$backend_html5_HTML5Window.prototype = {
 	}
 	,setMinimized: function(value) {
 		return false;
+	}
+	,setResizable: function(value) {
+		return value;
 	}
 	,setTitle: function(value) {
 		return value;
@@ -6272,12 +6373,6 @@ lime_graphics_Image.prototype = {
 		default:
 		}
 	}
-	,threshold: function(sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource) {
-		if(copySource == null) copySource = false;
-		if(mask == null) mask = -1;
-		if(color == null) color = 0;
-		return lime_graphics_utils_ImageDataUtil.threshold(this,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource);
-	}
 	,setPixel32: function(x,y,color,format) {
 		if(this.buffer == null || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		var _g = this.type;
@@ -6337,6 +6432,76 @@ lime_graphics_Image.prototype = {
 			break;
 		default:
 		}
+	}
+	,threshold: function(sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format) {
+		if(copySource == null) copySource = false;
+		if(mask == null) mask = -1;
+		if(color == null) color = 0;
+		if(this.buffer == null || sourceImage == null || sourceRect == null) return 0;
+		var _g = this.type;
+		switch(_g[1]) {
+		case 0:case 1:
+			lime_graphics_utils_ImageCanvasUtil.convertToData(this);
+			return lime_graphics_utils_ImageDataUtil.threshold(this,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format);
+		case 2:
+			var _color;
+			if(format != null) switch(format) {
+			case 1:
+				_color = color;
+				break;
+			case 2:
+				{
+					var bgra = color;
+					var argb = 0;
+					argb = (bgra & 255 & 255) << 24 | (bgra >> 8 & 255 & 255) << 16 | (bgra >> 16 & 255 & 255) << 8 | bgra >> 24 & 255 & 255;
+					_color = argb;
+				}
+				break;
+			default:
+				{
+					var rgba = color;
+					var argb1 = 0;
+					argb1 = (rgba & 255 & 255) << 24 | (rgba >> 24 & 255 & 255) << 16 | (rgba >> 16 & 255 & 255) << 8 | rgba >> 8 & 255 & 255;
+					_color = argb1;
+				}
+			} else {
+				var rgba1 = color;
+				var argb2 = 0;
+				argb2 = (rgba1 & 255 & 255) << 24 | (rgba1 >> 24 & 255 & 255) << 16 | (rgba1 >> 16 & 255 & 255) << 8 | rgba1 >> 8 & 255 & 255;
+				_color = argb2;
+			}
+			var _mask;
+			if(format != null) switch(format) {
+			case 1:
+				_mask = mask;
+				break;
+			case 2:
+				{
+					var bgra1 = mask;
+					var argb3 = 0;
+					argb3 = (bgra1 & 255 & 255) << 24 | (bgra1 >> 8 & 255 & 255) << 16 | (bgra1 >> 16 & 255 & 255) << 8 | bgra1 >> 24 & 255 & 255;
+					_mask = argb3;
+				}
+				break;
+			default:
+				{
+					var rgba2 = mask;
+					var argb4 = 0;
+					argb4 = (rgba2 & 255 & 255) << 24 | (rgba2 >> 24 & 255 & 255) << 16 | (rgba2 >> 16 & 255 & 255) << 8 | rgba2 >> 8 & 255 & 255;
+					_mask = argb4;
+				}
+			} else {
+				var rgba3 = mask;
+				var argb5 = 0;
+				argb5 = (rgba3 & 255 & 255) << 24 | (rgba3 >> 24 & 255 & 255) << 16 | (rgba3 >> 16 & 255 & 255) << 8 | rgba3 >> 8 & 255 & 255;
+				_mask = argb5;
+			}
+			sourceRect.offset(sourceImage.offsetX,sourceImage.offsetY);
+			destPoint.offset(this.offsetX,this.offsetY);
+			return this.buffer.__srcBitmapData.threshold(sourceImage.buffer.get_src(),sourceRect.__toFlashRectangle(),destPoint.__toFlashPoint(),operation,threshold,_color,_mask,copySource);
+		default:
+		}
+		return 0;
 	}
 	,__clipRect: function(r) {
 		if(r == null) return null;
@@ -6617,6 +6782,9 @@ lime_graphics_Renderer.prototype = {
 	}
 	,flip: function() {
 		this.backend.flip();
+	}
+	,readPixels: function(rect) {
+		return this.backend.readPixels(rect);
 	}
 	,render: function() {
 		this.backend.render();
@@ -9530,110 +9698,107 @@ lime_graphics_utils_ImageDataUtil.setPixels = function(image,rect,bytes,format) 
 	}
 	image.dirty = true;
 };
-lime_graphics_utils_ImageDataUtil.threshold = function(destImage,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource) {
-	if(copySource == null) copySource = false;
-	if(mask == null) mask = -1;
-	if(color == null) color = 0;
-	var thresholdMask = threshold & mask;
-	var a = thresholdMask >> 24 & 255;
-	var r = thresholdMask >> 16 & 255;
-	var g = thresholdMask >> 8 & 255;
-	var b = thresholdMask & 255;
-	var thresholdRGBA;
-	var rgba = 0;
-	rgba = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | a & 255;
-	thresholdRGBA = rgba;
-	a = color >> 24 & 255;
-	r = color >> 16 & 255;
-	g = color >> 8 & 255;
-	b = color & 255;
-	var colorRGBA;
-	var rgba1 = 0;
-	rgba1 = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | a & 255;
-	colorRGBA = rgba1;
-	var operationEnum;
-	switch(operation) {
-	case "==":
-		operationEnum = 0;
+lime_graphics_utils_ImageDataUtil.threshold = function(image,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format) {
+	var _color;
+	var _mask;
+	var _threshold;
+	switch(format) {
+	case 1:
+		{
+			var argb = color;
+			var rgba = 0;
+			rgba = (argb >> 16 & 255 & 255) << 24 | (argb >> 8 & 255 & 255) << 16 | (argb & 255 & 255) << 8 | argb >> 24 & 255 & 255;
+			_color = rgba;
+		}
+		{
+			var argb1 = mask;
+			var rgba1 = 0;
+			rgba1 = (argb1 >> 16 & 255 & 255) << 24 | (argb1 >> 8 & 255 & 255) << 16 | (argb1 & 255 & 255) << 8 | argb1 >> 24 & 255 & 255;
+			_mask = rgba1;
+		}
+		{
+			var argb2 = threshold;
+			var rgba2 = 0;
+			rgba2 = (argb2 >> 16 & 255 & 255) << 24 | (argb2 >> 8 & 255 & 255) << 16 | (argb2 & 255 & 255) << 8 | argb2 >> 24 & 255 & 255;
+			_threshold = rgba2;
+		}
 		break;
-	case "<":
-		operationEnum = 1;
-		break;
-	case ">":
-		operationEnum = 2;
-		break;
-	case "<=":
-		operationEnum = 3;
-		break;
-	case ">=":
-		operationEnum = 4;
-		break;
-	case "!=":
-		operationEnum = 5;
+	case 2:
+		{
+			var bgra = color;
+			var rgba3 = 0;
+			rgba3 = (bgra >> 8 & 255 & 255) << 24 | (bgra >> 16 & 255 & 255) << 16 | (bgra >> 24 & 255 & 255) << 8 | bgra & 255 & 255;
+			_color = rgba3;
+		}
+		{
+			var bgra1 = mask;
+			var rgba4 = 0;
+			rgba4 = (bgra1 >> 8 & 255 & 255) << 24 | (bgra1 >> 16 & 255 & 255) << 16 | (bgra1 >> 24 & 255 & 255) << 8 | bgra1 & 255 & 255;
+			_mask = rgba4;
+		}
+		{
+			var bgra2 = threshold;
+			var rgba5 = 0;
+			rgba5 = (bgra2 >> 8 & 255 & 255) << 24 | (bgra2 >> 16 & 255 & 255) << 16 | (bgra2 >> 24 & 255 & 255) << 8 | bgra2 & 255 & 255;
+			_threshold = rgba5;
+		}
 		break;
 	default:
-		operationEnum = 0;
+		_color = color;
+		_mask = mask;
+		_threshold = threshold;
 	}
-	var hits = 0;
-	if(sourceImage == destImage && sourceRect.equals(destImage.get_rect()) && destPoint.x == 0 && destPoint.y == 0) {
-		var pixelMask;
-		var i;
-		var test;
-		hits = lime_graphics_utils_ImageDataUtil.__threshold_inner_loop(destImage,sourceImage,sourceRect,mask,thresholdRGBA,operationEnum,colorRGBA,0,0,sourceRect.width | 0,sourceRect.height | 0);
-	} else {
-		var destData = destImage.buffer.data;
-		var destFormat = destImage.buffer.format;
-		var destPremultiplied = destImage.buffer.premultiplied;
-		sourceRect = sourceRect.clone();
-		if(sourceRect.get_right() > sourceImage.width) sourceRect.width = sourceImage.width - sourceRect.x;
-		if(sourceRect.get_bottom() > sourceImage.height) sourceRect.height = sourceImage.height - sourceRect.y;
-		var targetRect = sourceRect.clone();
-		targetRect.offsetPoint(destPoint);
-		if(targetRect.get_right() > destImage.width) targetRect.width = destImage.width - targetRect.x;
-		if(targetRect.get_bottom() > destImage.height) targetRect.height = destImage.height - targetRect.y;
-		sourceRect.width = Math.min(sourceRect.width,targetRect.width);
-		sourceRect.height = Math.min(sourceRect.height,targetRect.height);
-		var sx = sourceRect.x | 0;
-		var sy = sourceRect.y | 0;
-		var sw = sourceRect.width | 0;
-		var sh = sourceRect.height | 0;
-		var dx = destPoint.x | 0;
-		var dy = destPoint.y | 0;
-		var bw = destImage.width - sw - dx;
-		var bh = destImage.height - sh - dy;
-		var dw;
-		if(bw < 0) dw = sw + (destImage.width - sw - dx); else dw = sw;
-		var dh;
-		if(bw < 0) dh = sh + (destImage.height - sh - dy); else dh = sh;
-		if(copySource) destImage.copyPixels(sourceImage,sourceRect,destPoint);
-		var pixelMask1;
-		var i1;
-		var test1;
-		hits = lime_graphics_utils_ImageDataUtil.__threshold_inner_loop(destImage,sourceImage,sourceRect,mask,thresholdRGBA,operationEnum,colorRGBA,sx,sy,dw,dh);
-		return hits;
+	var _operation;
+	switch(operation) {
+	case "!=":
+		_operation = 0;
+		break;
+	case "==":
+		_operation = 1;
+		break;
+	case "<":
+		_operation = 2;
+		break;
+	case "<=":
+		_operation = 3;
+		break;
+	case ">":
+		_operation = 4;
+		break;
+	case ">=":
+		_operation = 5;
+		break;
+	default:
+		_operation = -1;
 	}
-	return 0;
-};
-lime_graphics_utils_ImageDataUtil.__threshold_inner_loop = function(image,sourceImage,sourceRect,mask,threshold,operation,color,startX,startY,destWidth,destHeight) {
-	var srcView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(sourceImage,sourceRect);
-	var srcPixel = 0;
-	var srcPosition = 0;
-	var srcFormat = sourceImage.buffer.format;
-	var srcPremultiplied = sourceImage.buffer.premultiplied;
+	if(_operation == -1) return 0;
 	var srcData = sourceImage.buffer.data;
-	var colorRGBA = color;
-	var pixelMask = 0;
-	var i = 0;
-	var test = false;
+	var destData = image.buffer.data;
+	if(srcData == null || destData == null) return 0;
 	var hits = 0;
-	var _g = 0;
-	while(_g < destHeight) {
-		var yy = _g++;
-		srcPosition = srcView.offset + srcView.stride * (yy + startY);
-		srcPosition += 4 * startX;
-		var _g1 = 0;
-		while(_g1 < destWidth) {
-			var xx = _g1++;
+	var srcView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(sourceImage,sourceRect);
+	var destView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(image,new lime_math_Rectangle(destPoint.x,destPoint.y,srcView.width,srcView.height));
+	var srcFormat = sourceImage.buffer.format;
+	var destFormat = image.buffer.format;
+	var srcPremultiplied = sourceImage.buffer.premultiplied;
+	var destPremultiplied = image.buffer.premultiplied;
+	var srcPosition;
+	var destPosition;
+	var srcPixel;
+	var destPixel;
+	var pixelMask;
+	var test;
+	var value;
+	var _g1 = 0;
+	var _g = destView.height;
+	while(_g1 < _g) {
+		var y = _g1++;
+		srcPosition = srcView.offset + srcView.stride * y;
+		destPosition = destView.offset + destView.stride * y;
+		var _g3 = 0;
+		var _g2 = destView.width;
+		while(_g3 < _g2) {
+			var x = _g3++;
 			switch(srcFormat) {
 			case 2:
 				srcPixel = (srcData[srcPosition + 2] & 255) << 24 | (srcData[srcPosition + 1] & 255) << 16 | (srcData[srcPosition] & 255) << 8 | srcData[srcPosition + 3] & 255;
@@ -9660,64 +9825,95 @@ lime_graphics_utils_ImageDataUtil.__threshold_inner_loop = function(image,source
 					srcPixel = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | srcPixel & 255 & 255;
 				}
 			}
-			pixelMask = srcPixel & mask;
-			i = lime_graphics_utils_ImageDataUtil.__ucompare(pixelMask,threshold);
-			switch(operation) {
+			pixelMask = srcPixel & _mask;
+			value = lime_graphics_utils_ImageDataUtil.__pixelCompare(pixelMask,_threshold);
+			switch(_operation) {
 			case 0:
-				test = i == 0;
+				test = value != 0;
 				break;
 			case 1:
-				test = i == -1;
+				test = value == 0;
 				break;
 			case 2:
-				test = i == 1;
-				break;
-			case 5:
-				test = i != 0;
+				test = value == -1;
 				break;
 			case 3:
-				test = i == 0 || i == -1;
+				test = value == 0 || value == -1;
 				break;
 			case 4:
-				test = i == 0 || i == 1;
+				test = value == 1;
+				break;
+			case 5:
+				test = value == 0 || value == 1;
 				break;
 			default:
 				test = false;
 			}
 			if(test) {
-				if(srcPremultiplied) {
-					if((colorRGBA & 255) == 0) {
-						if(colorRGBA != 0) colorRGBA = 0;
-					} else if((colorRGBA & 255) != 255) {
-						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[colorRGBA & 255];
-						colorRGBA = ((colorRGBA >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((colorRGBA >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((colorRGBA >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | colorRGBA & 255 & 255;
+				if(destPremultiplied) {
+					if((_color & 255) == 0) {
+						if(_color != 0) _color = 0;
+					} else if((_color & 255) != 255) {
+						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[_color & 255];
+						_color = ((_color >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((_color >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((_color >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | _color & 255 & 255;
 					}
 				}
-				switch(srcFormat) {
+				switch(destFormat) {
 				case 2:
-					srcData[srcPosition] = colorRGBA >> 8 & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 3] = colorRGBA & 255;
+					destData[destPosition] = _color >> 8 & 255;
+					destData[destPosition + 1] = _color >> 16 & 255;
+					destData[destPosition + 2] = _color >> 24 & 255;
+					destData[destPosition + 3] = _color & 255;
 					break;
 				case 0:
-					srcData[srcPosition] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 8 & 255;
-					srcData[srcPosition + 3] = colorRGBA & 255;
+					destData[destPosition] = _color >> 24 & 255;
+					destData[destPosition + 1] = _color >> 16 & 255;
+					destData[destPosition + 2] = _color >> 8 & 255;
+					destData[destPosition + 3] = _color & 255;
 					break;
 				case 1:
-					srcData[srcPosition] = colorRGBA & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 3] = colorRGBA >> 8 & 255;
+					destData[destPosition] = _color & 255;
+					destData[destPosition + 1] = _color >> 24 & 255;
+					destData[destPosition + 2] = _color >> 16 & 255;
+					destData[destPosition + 3] = _color >> 8 & 255;
 					break;
 				}
 				hits++;
+			} else if(copySource) {
+				if(destPremultiplied) {
+					if((srcPixel & 255) == 0) {
+						if(srcPixel != 0) srcPixel = 0;
+					} else if((srcPixel & 255) != 255) {
+						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[srcPixel & 255];
+						srcPixel = ((srcPixel >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((srcPixel >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((srcPixel >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | srcPixel & 255 & 255;
+					}
+				}
+				switch(destFormat) {
+				case 2:
+					destData[destPosition] = srcPixel >> 8 & 255;
+					destData[destPosition + 1] = srcPixel >> 16 & 255;
+					destData[destPosition + 2] = srcPixel >> 24 & 255;
+					destData[destPosition + 3] = srcPixel & 255;
+					break;
+				case 0:
+					destData[destPosition] = srcPixel >> 24 & 255;
+					destData[destPosition + 1] = srcPixel >> 16 & 255;
+					destData[destPosition + 2] = srcPixel >> 8 & 255;
+					destData[destPosition + 3] = srcPixel & 255;
+					break;
+				case 1:
+					destData[destPosition] = srcPixel & 255;
+					destData[destPosition + 1] = srcPixel >> 24 & 255;
+					destData[destPosition + 2] = srcPixel >> 16 & 255;
+					destData[destPosition + 3] = srcPixel >> 8 & 255;
+					break;
+				}
 			}
 			srcPosition += 4;
+			destPosition += 4;
 		}
 	}
+	if(hits > 0) image.dirty = true;
 	return hits;
 };
 lime_graphics_utils_ImageDataUtil.unmultiplyAlpha = function(image) {
@@ -9779,7 +9975,7 @@ lime_graphics_utils_ImageDataUtil.unmultiplyAlpha = function(image) {
 	image.buffer.premultiplied = false;
 	image.dirty = true;
 };
-lime_graphics_utils_ImageDataUtil.__ucompare = function(n1,n2) {
+lime_graphics_utils_ImageDataUtil.__pixelCompare = function(n1,n2) {
 	var tmp1;
 	var tmp2;
 	tmp1 = n1 >> 24 & 255;
@@ -11308,6 +11504,7 @@ lime_system_System.getDisplay = function(id) {
 		var display = new lime_system_Display();
 		display.id = 0;
 		display.name = "Generic Display";
+		display.dpi = 96;
 		display.currentMode = new lime_system_DisplayMode(window.screen.width,window.screen.height,60,1);
 		display.supportedModes = [display.currentMode];
 		display.bounds = new lime_math_Rectangle(0,0,display.currentMode.width,display.currentMode.height);
@@ -11795,6 +11992,8 @@ var lime_ui_Window = function(config) {
 		if(Object.prototype.hasOwnProperty.call(config,"x")) this.__x = config.x;
 		if(Object.prototype.hasOwnProperty.call(config,"y")) this.__y = config.y;
 		if(Object.prototype.hasOwnProperty.call(config,"fullscreen")) this.__fullscreen = config.fullscreen;
+		if(Object.prototype.hasOwnProperty.call(config,"borderless")) this.__borderless = config.borderless;
+		if(Object.prototype.hasOwnProperty.call(config,"resizable")) this.__resizable = config.resizable;
 		if(Object.prototype.hasOwnProperty.call(config,"title")) this.__title = config.title;
 	}
 	this.backend = new lime__$backend_html5_HTML5Window(this);
@@ -11836,6 +12035,12 @@ lime_ui_Window.prototype = {
 	,get_display: function() {
 		return this.backend.getDisplay();
 	}
+	,get_borderless: function() {
+		return this.__borderless;
+	}
+	,set_borderless: function(value) {
+		return this.__borderless = this.backend.setBorderless(value);
+	}
 	,get_enableTextEvents: function() {
 		return this.backend.getEnableTextEvents();
 	}
@@ -11860,6 +12065,13 @@ lime_ui_Window.prototype = {
 	}
 	,set_minimized: function(value) {
 		return this.__minimized = this.backend.setMinimized(value);
+	}
+	,get_resizable: function() {
+		return this.__resizable;
+	}
+	,set_resizable: function(value) {
+		this.__resizable = this.backend.setResizable(value);
+		return this.__resizable;
 	}
 	,get_scale: function() {
 		return this.__scale;
@@ -12486,7 +12698,6 @@ lime_net_curl__$CURL_CURL_$Impl_$.GLOBAL_DEFAULT = 3;
 lime_net_curl__$CURL_CURL_$Impl_$.GLOBAL_ACK_EINTR = 4;
 lime_system_BackgroundWorker.MESSAGE_COMPLETE = "__COMPLETE__";
 lime_system_BackgroundWorker.MESSAGE_ERROR = "__ERROR__";
-lime_system_CFFI.lime_cffi_set_finalizer = lime_system_CFFI.load("lime","lime_cffi_set_finalizer",1,false);
 lime_ui_Gamepad.devices = new haxe_ds_IntMap();
 lime_ui_Gamepad.onConnect = new lime_app_Event_$lime_$ui_$Gamepad_$Void();
 lime_ui__$GamepadAxis_GamepadAxis_$Impl_$.LEFT_X = 0;

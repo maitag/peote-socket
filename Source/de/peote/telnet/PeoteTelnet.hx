@@ -7,10 +7,9 @@ package de.peote.telnet;
  */
 
 import haxe.io.Bytes;
-import haxe.io.BytesData;
-import haxe.remoting.FlashJsConnection;
 
 import de.peote.socket.PeoteSocket;
+import de.peote.io.PeoteBytesInput;
 
 class PeoteTelnet
 {
@@ -62,11 +61,11 @@ class PeoteTelnet
 		peoteSocket.flush();
 	}
 	
-	public inline function parseTelnetData(bytes:Bytes, remoteInput:Int->Void):Void
+	public inline function parseTelnetData(input:PeoteBytesInput, remoteInput:Int->Void):Void
 	{
-		for (i in 0...bytes.length)
+		for (i in 0...input.length)
 		{
-			var b:Int = bytes.get(i);
+			var b:Int = input.readByte();
 			
 			switch (state)
 			{

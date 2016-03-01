@@ -30,7 +30,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "187", company : "Sylvio Sell - maitag", file : "peoteSocketTest", fps : 60, name : "PeoteSocketTest", orientation : "", packageName : "de.peote.socket", version : "0.1.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteSocketTest", vsync : false, width : 0, x : null, y : null}]};
+	ApplicationMain.config = { build : "241", company : "Sylvio Sell - maitag", file : "peoteSocketTest", fps : 60, name : "PeoteSocketTest", orientation : "", packageName : "de.peote.socket", version : "0.2.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteSocketTest", vsync : false, width : 0, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1115,11 +1115,11 @@ lime_app_Application.prototype = $extend(lime_app_Module.prototype,{
 var PeoteSocketTest = function() {
 	lime_app_Application.call(this);
 	this.peoteSocket = new PeoteSocket({ onConnect : function(connected,msg) {
-		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteSocketTest.hx", lineNumber : 23, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onConnect:" + connected + " - " + msg,{ fileName : "PeoteSocketTest.hx", lineNumber : 24, className : "PeoteSocketTest", methodName : "new"});
 	}, onClose : function(msg1) {
-		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteSocketTest.hx", lineNumber : 26, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onClose:" + msg1,{ fileName : "PeoteSocketTest.hx", lineNumber : 28, className : "PeoteSocketTest", methodName : "new"});
 	}, onError : function(msg2) {
-		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteSocketTest.hx", lineNumber : 29, className : "PeoteSocketTest", methodName : "new"});
+		haxe_Log.trace("onError:" + msg2,{ fileName : "PeoteSocketTest.hx", lineNumber : 31, className : "PeoteSocketTest", methodName : "new"});
 	}, onData : $bind(this,this.onData)});
 	this.peoteSocket.connect("192.168.1.50",23);
 };
@@ -1127,27 +1127,25 @@ $hxClasses["PeoteSocketTest"] = PeoteSocketTest;
 PeoteSocketTest.__name__ = true;
 PeoteSocketTest.__super__ = lime_app_Application;
 PeoteSocketTest.prototype = $extend(lime_app_Application.prototype,{
-	onData: function(data) {
-		var bytes = haxe_io_Bytes.ofData(new ArrayBuffer(data.length));
-		var _g1 = 0;
-		var _g = data.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			bytes.b[i] = data[i] & 255;
-		}
-		this.debug_output(bytes);
+	sendTestData: function() {
+		var output = new de_peote_io_js_PeoteBytesOutput();
+		output.bytes.push(255);
+		output.bytes.push(57);
+		output.bytes.push(48);
+		output.bytes.push(21);
+		output.bytes.push(205);
+		output.bytes.push(91);
+		output.bytes.push(7);
+		output.writeFloat(1.2345678);
+		output.writeDouble(1.2345678901234567890123456789);
+		output.writeString("Hello Server");
+		this.peoteSocket.writeBytes(output.bytes);
 	}
-	,debug_output: function(bytes) {
-		var s = "";
-		var _g1 = 0;
-		var _g = bytes.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			s += bytes.b[i] + " ";
-		}
-		haxe_Log.trace("onData:" + s,{ fileName : "PeoteSocketTest.hx", lineNumber : 54, className : "PeoteSocketTest", methodName : "debug_output"});
-		this.peoteSocket.close();
-		this.peoteSocket.connect("192.168.1.50",23);
+	,onData: function(peoteBytes) {
+		haxe_Log.trace("onData:",{ fileName : "PeoteSocketTest.hx", lineNumber : 55, className : "PeoteSocketTest", methodName : "onData"});
+		var input = new de_peote_io_js_PeoteBytesInput(peoteBytes);
+		haxe_Log.trace("data bytes length = " + input.length,{ fileName : "PeoteSocketTest.hx", lineNumber : 58, className : "PeoteSocketTest", methodName : "onData"});
+		while(input.position < input.length) haxe_Log.trace(input.position + ":" + input.bytes[input.position++],{ fileName : "PeoteSocketTest.hx", lineNumber : 61, className : "PeoteSocketTest", methodName : "onData"});
 	}
 	,__class__: PeoteSocketTest
 });
@@ -1240,6 +1238,119 @@ _$UInt_UInt_$Impl_$.__name__ = true;
 _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
+};
+var de_peote_io_js_PeoteBytesInput = $hx_exports.PeoteBytesInput = function(bytes) {
+	this.position = 0;
+	this.bytes = bytes;
+	this.length = bytes.length;
+};
+$hxClasses["de.peote.io.js.PeoteBytesInput"] = de_peote_io_js_PeoteBytesInput;
+de_peote_io_js_PeoteBytesInput.__name__ = true;
+de_peote_io_js_PeoteBytesInput.main = function() {
+};
+de_peote_io_js_PeoteBytesInput.prototype = {
+	readByte: function() {
+		return this.bytes[this.position++];
+	}
+	,readInt16: function() {
+		this.position += 2;
+		return this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+	}
+	,readInt32: function() {
+		this.position += 4;
+		return this.bytes[this.position - 1] << 24 | this.bytes[this.position - 2] << 16 | this.bytes[this.position - 3] << 8 | this.bytes[this.position - 4];
+	}
+	,readFloat: function() {
+		var b = haxe_io_Bytes.alloc(4);
+		b.setInt32(0,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		return b.getFloat(0);
+	}
+	,readDouble: function() {
+		var b = haxe_io_Bytes.alloc(8);
+		b.setInt32(0,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		b.setInt32(4,(function($this) {
+			var $r;
+			$this.position += 4;
+			$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+			return $r;
+		}(this)));
+		return b.getDouble(0);
+	}
+	,readString: function() {
+		var len;
+		this.position += 2;
+		len = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		var b = haxe_io_Bytes.alloc(len * 4);
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			b.setInt32(i * 4,(function($this) {
+				var $r;
+				$this.position += 4;
+				$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
+				return $r;
+			}(this)));
+		}
+		return b.getString(0,len);
+	}
+	,__class__: de_peote_io_js_PeoteBytesInput
+};
+var de_peote_io_js_PeoteBytesOutput = $hx_exports.PeoteBytesOutput = function() {
+	this.bytes = [];
+};
+$hxClasses["de.peote.io.js.PeoteBytesOutput"] = de_peote_io_js_PeoteBytesOutput;
+de_peote_io_js_PeoteBytesOutput.__name__ = true;
+de_peote_io_js_PeoteBytesOutput.main = function() {
+};
+de_peote_io_js_PeoteBytesOutput.prototype = {
+	writeByte: function(b) {
+		this.bytes.push(b);
+	}
+	,writeInt16: function(b) {
+		this.bytes.push(b & 255);
+		this.bytes.push(b >> 8 & 255);
+	}
+	,writeInt32: function(b) {
+		this.bytes.push(b & 255);
+		this.bytes.push(b >> 8 & 255);
+		this.bytes.push(b >> 16 & 255);
+		this.bytes.push(b >> 24 & 255);
+	}
+	,writeFloat: function(f) {
+		var b = haxe_io_Bytes.alloc(4);
+		b.setFloat(0,f);
+		this.writeInt32(b.getInt32(0));
+	}
+	,writeDouble: function(f) {
+		var b = haxe_io_Bytes.alloc(8);
+		b.setDouble(0,f);
+		this.writeInt32(b.getInt32(0));
+		this.writeInt32(b.getInt32(4));
+	}
+	,writeString: function(s) {
+		var b = haxe_io_Bytes.ofString(s);
+		this.writeInt16(s.length);
+		var _g1 = 0;
+		var _g = b.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.bytes.push(b.b[i]);
+		}
+	}
+	,getBytes: function() {
+		return this.bytes;
+	}
+	,__class__: de_peote_io_js_PeoteBytesOutput
 };
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
@@ -1472,9 +1583,29 @@ haxe_io_Bytes.prototype = {
 		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
 		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
 	}
+	,getDouble: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat64(pos,true);
+	}
+	,getFloat: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat32(pos,true);
+	}
+	,setDouble: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setFloat64(pos,v,true);
+	}
+	,setFloat: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setFloat32(pos,v,true);
+	}
 	,setUInt16: function(pos,v) {
 		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
 		this.data.setUint16(pos,v,true);
+	}
+	,getInt32: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getInt32(pos,true);
 	}
 	,setInt32: function(pos,v) {
 		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -2507,7 +2638,13 @@ lime__$backend_html5_HTML5Application.prototype = {
 			var keyCode = this.convertKeyCode(event.keyCode != null?event.keyCode:event.which);
 			var modifier;
 			modifier = (event.shiftKey?3:0) | (event.ctrlKey?192:0) | (event.altKey?768:0) | (event.metaKey?3072:0);
-			if(event.type == "keydown") this.parent.windows[0].onKeyDown.dispatch(keyCode,modifier); else this.parent.windows[0].onKeyUp.dispatch(keyCode,modifier);
+			if(event.type == "keydown") {
+				this.parent.windows[0].onKeyDown.dispatch(keyCode,modifier);
+				if(this.parent.windows[0].onKeyDown.canceled) event.preventDefault();
+			} else {
+				this.parent.windows[0].onKeyUp.dispatch(keyCode,modifier);
+				if(this.parent.windows[0].onKeyUp.canceled) event.preventDefault();
+			}
 		}
 	}
 	,handleWindowEvent: function(event) {
@@ -2736,6 +2873,20 @@ lime__$backend_html5_HTML5Renderer.prototype = {
 			break;
 		default:
 		}
+	}
+	,readPixels: function(rect) {
+		if(this.parent.window.backend.canvas != null) {
+			if(rect == null) rect = new lime_math_Rectangle(0,0,this.parent.window.backend.canvas.width,this.parent.window.backend.canvas.height); else rect.__contract(0,0,this.parent.window.backend.canvas.width,this.parent.window.backend.canvas.height);
+			if(rect.width > 0 && rect.height > 0) {
+				var canvas = window.document.createElement("canvas");
+				canvas.width = rect.width | 0;
+				canvas.height = rect.height | 0;
+				var context = canvas.getContext("2d");
+				context.drawImage(this.parent.window.backend.canvas,-rect.x,-rect.y);
+				return lime_graphics_Image.fromCanvas(canvas);
+			}
+		}
+		return null;
 	}
 	,render: function() {
 	}
@@ -3023,6 +3174,9 @@ lime__$backend_html5_HTML5Window.prototype = {
 	}
 	,resize: function(width,height) {
 	}
+	,setBorderless: function(value) {
+		return value;
+	}
 	,setEnableTextEvents: function(value) {
 		if(value) {
 			if(lime__$backend_html5_HTML5Window.textInput == null) {
@@ -3068,6 +3222,9 @@ lime__$backend_html5_HTML5Window.prototype = {
 	}
 	,setMinimized: function(value) {
 		return false;
+	}
+	,setResizable: function(value) {
+		return value;
 	}
 	,setTitle: function(value) {
 		return value;
@@ -6131,12 +6288,6 @@ lime_graphics_Image.prototype = {
 		default:
 		}
 	}
-	,threshold: function(sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource) {
-		if(copySource == null) copySource = false;
-		if(mask == null) mask = -1;
-		if(color == null) color = 0;
-		return lime_graphics_utils_ImageDataUtil.threshold(this,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource);
-	}
 	,setPixel32: function(x,y,color,format) {
 		if(this.buffer == null || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		var _g = this.type;
@@ -6196,6 +6347,76 @@ lime_graphics_Image.prototype = {
 			break;
 		default:
 		}
+	}
+	,threshold: function(sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format) {
+		if(copySource == null) copySource = false;
+		if(mask == null) mask = -1;
+		if(color == null) color = 0;
+		if(this.buffer == null || sourceImage == null || sourceRect == null) return 0;
+		var _g = this.type;
+		switch(_g[1]) {
+		case 0:case 1:
+			lime_graphics_utils_ImageCanvasUtil.convertToData(this);
+			return lime_graphics_utils_ImageDataUtil.threshold(this,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format);
+		case 2:
+			var _color;
+			if(format != null) switch(format) {
+			case 1:
+				_color = color;
+				break;
+			case 2:
+				{
+					var bgra = color;
+					var argb = 0;
+					argb = (bgra & 255 & 255) << 24 | (bgra >> 8 & 255 & 255) << 16 | (bgra >> 16 & 255 & 255) << 8 | bgra >> 24 & 255 & 255;
+					_color = argb;
+				}
+				break;
+			default:
+				{
+					var rgba = color;
+					var argb1 = 0;
+					argb1 = (rgba & 255 & 255) << 24 | (rgba >> 24 & 255 & 255) << 16 | (rgba >> 16 & 255 & 255) << 8 | rgba >> 8 & 255 & 255;
+					_color = argb1;
+				}
+			} else {
+				var rgba1 = color;
+				var argb2 = 0;
+				argb2 = (rgba1 & 255 & 255) << 24 | (rgba1 >> 24 & 255 & 255) << 16 | (rgba1 >> 16 & 255 & 255) << 8 | rgba1 >> 8 & 255 & 255;
+				_color = argb2;
+			}
+			var _mask;
+			if(format != null) switch(format) {
+			case 1:
+				_mask = mask;
+				break;
+			case 2:
+				{
+					var bgra1 = mask;
+					var argb3 = 0;
+					argb3 = (bgra1 & 255 & 255) << 24 | (bgra1 >> 8 & 255 & 255) << 16 | (bgra1 >> 16 & 255 & 255) << 8 | bgra1 >> 24 & 255 & 255;
+					_mask = argb3;
+				}
+				break;
+			default:
+				{
+					var rgba2 = mask;
+					var argb4 = 0;
+					argb4 = (rgba2 & 255 & 255) << 24 | (rgba2 >> 24 & 255 & 255) << 16 | (rgba2 >> 16 & 255 & 255) << 8 | rgba2 >> 8 & 255 & 255;
+					_mask = argb4;
+				}
+			} else {
+				var rgba3 = mask;
+				var argb5 = 0;
+				argb5 = (rgba3 & 255 & 255) << 24 | (rgba3 >> 24 & 255 & 255) << 16 | (rgba3 >> 16 & 255 & 255) << 8 | rgba3 >> 8 & 255 & 255;
+				_mask = argb5;
+			}
+			sourceRect.offset(sourceImage.offsetX,sourceImage.offsetY);
+			destPoint.offset(this.offsetX,this.offsetY);
+			return this.buffer.__srcBitmapData.threshold(sourceImage.buffer.get_src(),sourceRect.__toFlashRectangle(),destPoint.__toFlashPoint(),operation,threshold,_color,_mask,copySource);
+		default:
+		}
+		return 0;
 	}
 	,__clipRect: function(r) {
 		if(r == null) return null;
@@ -6476,6 +6697,9 @@ lime_graphics_Renderer.prototype = {
 	}
 	,flip: function() {
 		this.backend.flip();
+	}
+	,readPixels: function(rect) {
+		return this.backend.readPixels(rect);
 	}
 	,render: function() {
 		this.backend.render();
@@ -9389,110 +9613,107 @@ lime_graphics_utils_ImageDataUtil.setPixels = function(image,rect,bytes,format) 
 	}
 	image.dirty = true;
 };
-lime_graphics_utils_ImageDataUtil.threshold = function(destImage,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource) {
-	if(copySource == null) copySource = false;
-	if(mask == null) mask = -1;
-	if(color == null) color = 0;
-	var thresholdMask = threshold & mask;
-	var a = thresholdMask >> 24 & 255;
-	var r = thresholdMask >> 16 & 255;
-	var g = thresholdMask >> 8 & 255;
-	var b = thresholdMask & 255;
-	var thresholdRGBA;
-	var rgba = 0;
-	rgba = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | a & 255;
-	thresholdRGBA = rgba;
-	a = color >> 24 & 255;
-	r = color >> 16 & 255;
-	g = color >> 8 & 255;
-	b = color & 255;
-	var colorRGBA;
-	var rgba1 = 0;
-	rgba1 = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | a & 255;
-	colorRGBA = rgba1;
-	var operationEnum;
-	switch(operation) {
-	case "==":
-		operationEnum = 0;
+lime_graphics_utils_ImageDataUtil.threshold = function(image,sourceImage,sourceRect,destPoint,operation,threshold,color,mask,copySource,format) {
+	var _color;
+	var _mask;
+	var _threshold;
+	switch(format) {
+	case 1:
+		{
+			var argb = color;
+			var rgba = 0;
+			rgba = (argb >> 16 & 255 & 255) << 24 | (argb >> 8 & 255 & 255) << 16 | (argb & 255 & 255) << 8 | argb >> 24 & 255 & 255;
+			_color = rgba;
+		}
+		{
+			var argb1 = mask;
+			var rgba1 = 0;
+			rgba1 = (argb1 >> 16 & 255 & 255) << 24 | (argb1 >> 8 & 255 & 255) << 16 | (argb1 & 255 & 255) << 8 | argb1 >> 24 & 255 & 255;
+			_mask = rgba1;
+		}
+		{
+			var argb2 = threshold;
+			var rgba2 = 0;
+			rgba2 = (argb2 >> 16 & 255 & 255) << 24 | (argb2 >> 8 & 255 & 255) << 16 | (argb2 & 255 & 255) << 8 | argb2 >> 24 & 255 & 255;
+			_threshold = rgba2;
+		}
 		break;
-	case "<":
-		operationEnum = 1;
-		break;
-	case ">":
-		operationEnum = 2;
-		break;
-	case "<=":
-		operationEnum = 3;
-		break;
-	case ">=":
-		operationEnum = 4;
-		break;
-	case "!=":
-		operationEnum = 5;
+	case 2:
+		{
+			var bgra = color;
+			var rgba3 = 0;
+			rgba3 = (bgra >> 8 & 255 & 255) << 24 | (bgra >> 16 & 255 & 255) << 16 | (bgra >> 24 & 255 & 255) << 8 | bgra & 255 & 255;
+			_color = rgba3;
+		}
+		{
+			var bgra1 = mask;
+			var rgba4 = 0;
+			rgba4 = (bgra1 >> 8 & 255 & 255) << 24 | (bgra1 >> 16 & 255 & 255) << 16 | (bgra1 >> 24 & 255 & 255) << 8 | bgra1 & 255 & 255;
+			_mask = rgba4;
+		}
+		{
+			var bgra2 = threshold;
+			var rgba5 = 0;
+			rgba5 = (bgra2 >> 8 & 255 & 255) << 24 | (bgra2 >> 16 & 255 & 255) << 16 | (bgra2 >> 24 & 255 & 255) << 8 | bgra2 & 255 & 255;
+			_threshold = rgba5;
+		}
 		break;
 	default:
-		operationEnum = 0;
+		_color = color;
+		_mask = mask;
+		_threshold = threshold;
 	}
-	var hits = 0;
-	if(sourceImage == destImage && sourceRect.equals(destImage.get_rect()) && destPoint.x == 0 && destPoint.y == 0) {
-		var pixelMask;
-		var i;
-		var test;
-		hits = lime_graphics_utils_ImageDataUtil.__threshold_inner_loop(destImage,sourceImage,sourceRect,mask,thresholdRGBA,operationEnum,colorRGBA,0,0,sourceRect.width | 0,sourceRect.height | 0);
-	} else {
-		var destData = destImage.buffer.data;
-		var destFormat = destImage.buffer.format;
-		var destPremultiplied = destImage.buffer.premultiplied;
-		sourceRect = sourceRect.clone();
-		if(sourceRect.get_right() > sourceImage.width) sourceRect.width = sourceImage.width - sourceRect.x;
-		if(sourceRect.get_bottom() > sourceImage.height) sourceRect.height = sourceImage.height - sourceRect.y;
-		var targetRect = sourceRect.clone();
-		targetRect.offsetPoint(destPoint);
-		if(targetRect.get_right() > destImage.width) targetRect.width = destImage.width - targetRect.x;
-		if(targetRect.get_bottom() > destImage.height) targetRect.height = destImage.height - targetRect.y;
-		sourceRect.width = Math.min(sourceRect.width,targetRect.width);
-		sourceRect.height = Math.min(sourceRect.height,targetRect.height);
-		var sx = sourceRect.x | 0;
-		var sy = sourceRect.y | 0;
-		var sw = sourceRect.width | 0;
-		var sh = sourceRect.height | 0;
-		var dx = destPoint.x | 0;
-		var dy = destPoint.y | 0;
-		var bw = destImage.width - sw - dx;
-		var bh = destImage.height - sh - dy;
-		var dw;
-		if(bw < 0) dw = sw + (destImage.width - sw - dx); else dw = sw;
-		var dh;
-		if(bw < 0) dh = sh + (destImage.height - sh - dy); else dh = sh;
-		if(copySource) destImage.copyPixels(sourceImage,sourceRect,destPoint);
-		var pixelMask1;
-		var i1;
-		var test1;
-		hits = lime_graphics_utils_ImageDataUtil.__threshold_inner_loop(destImage,sourceImage,sourceRect,mask,thresholdRGBA,operationEnum,colorRGBA,sx,sy,dw,dh);
-		return hits;
+	var _operation;
+	switch(operation) {
+	case "!=":
+		_operation = 0;
+		break;
+	case "==":
+		_operation = 1;
+		break;
+	case "<":
+		_operation = 2;
+		break;
+	case "<=":
+		_operation = 3;
+		break;
+	case ">":
+		_operation = 4;
+		break;
+	case ">=":
+		_operation = 5;
+		break;
+	default:
+		_operation = -1;
 	}
-	return 0;
-};
-lime_graphics_utils_ImageDataUtil.__threshold_inner_loop = function(image,sourceImage,sourceRect,mask,threshold,operation,color,startX,startY,destWidth,destHeight) {
-	var srcView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(sourceImage,sourceRect);
-	var srcPixel = 0;
-	var srcPosition = 0;
-	var srcFormat = sourceImage.buffer.format;
-	var srcPremultiplied = sourceImage.buffer.premultiplied;
+	if(_operation == -1) return 0;
 	var srcData = sourceImage.buffer.data;
-	var colorRGBA = color;
-	var pixelMask = 0;
-	var i = 0;
-	var test = false;
+	var destData = image.buffer.data;
+	if(srcData == null || destData == null) return 0;
 	var hits = 0;
-	var _g = 0;
-	while(_g < destHeight) {
-		var yy = _g++;
-		srcPosition = srcView.offset + srcView.stride * (yy + startY);
-		srcPosition += 4 * startX;
-		var _g1 = 0;
-		while(_g1 < destWidth) {
-			var xx = _g1++;
+	var srcView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(sourceImage,sourceRect);
+	var destView = new lime_graphics_utils__$ImageDataUtil_ImageDataView(image,new lime_math_Rectangle(destPoint.x,destPoint.y,srcView.width,srcView.height));
+	var srcFormat = sourceImage.buffer.format;
+	var destFormat = image.buffer.format;
+	var srcPremultiplied = sourceImage.buffer.premultiplied;
+	var destPremultiplied = image.buffer.premultiplied;
+	var srcPosition;
+	var destPosition;
+	var srcPixel;
+	var destPixel;
+	var pixelMask;
+	var test;
+	var value;
+	var _g1 = 0;
+	var _g = destView.height;
+	while(_g1 < _g) {
+		var y = _g1++;
+		srcPosition = srcView.offset + srcView.stride * y;
+		destPosition = destView.offset + destView.stride * y;
+		var _g3 = 0;
+		var _g2 = destView.width;
+		while(_g3 < _g2) {
+			var x = _g3++;
 			switch(srcFormat) {
 			case 2:
 				srcPixel = (srcData[srcPosition + 2] & 255) << 24 | (srcData[srcPosition + 1] & 255) << 16 | (srcData[srcPosition] & 255) << 8 | srcData[srcPosition + 3] & 255;
@@ -9519,64 +9740,95 @@ lime_graphics_utils_ImageDataUtil.__threshold_inner_loop = function(image,source
 					srcPixel = (r & 255) << 24 | (g & 255) << 16 | (b & 255) << 8 | srcPixel & 255 & 255;
 				}
 			}
-			pixelMask = srcPixel & mask;
-			i = lime_graphics_utils_ImageDataUtil.__ucompare(pixelMask,threshold);
-			switch(operation) {
+			pixelMask = srcPixel & _mask;
+			value = lime_graphics_utils_ImageDataUtil.__pixelCompare(pixelMask,_threshold);
+			switch(_operation) {
 			case 0:
-				test = i == 0;
+				test = value != 0;
 				break;
 			case 1:
-				test = i == -1;
+				test = value == 0;
 				break;
 			case 2:
-				test = i == 1;
-				break;
-			case 5:
-				test = i != 0;
+				test = value == -1;
 				break;
 			case 3:
-				test = i == 0 || i == -1;
+				test = value == 0 || value == -1;
 				break;
 			case 4:
-				test = i == 0 || i == 1;
+				test = value == 1;
+				break;
+			case 5:
+				test = value == 0 || value == 1;
 				break;
 			default:
 				test = false;
 			}
 			if(test) {
-				if(srcPremultiplied) {
-					if((colorRGBA & 255) == 0) {
-						if(colorRGBA != 0) colorRGBA = 0;
-					} else if((colorRGBA & 255) != 255) {
-						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[colorRGBA & 255];
-						colorRGBA = ((colorRGBA >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((colorRGBA >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((colorRGBA >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | colorRGBA & 255 & 255;
+				if(destPremultiplied) {
+					if((_color & 255) == 0) {
+						if(_color != 0) _color = 0;
+					} else if((_color & 255) != 255) {
+						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[_color & 255];
+						_color = ((_color >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((_color >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((_color >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | _color & 255 & 255;
 					}
 				}
-				switch(srcFormat) {
+				switch(destFormat) {
 				case 2:
-					srcData[srcPosition] = colorRGBA >> 8 & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 3] = colorRGBA & 255;
+					destData[destPosition] = _color >> 8 & 255;
+					destData[destPosition + 1] = _color >> 16 & 255;
+					destData[destPosition + 2] = _color >> 24 & 255;
+					destData[destPosition + 3] = _color & 255;
 					break;
 				case 0:
-					srcData[srcPosition] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 8 & 255;
-					srcData[srcPosition + 3] = colorRGBA & 255;
+					destData[destPosition] = _color >> 24 & 255;
+					destData[destPosition + 1] = _color >> 16 & 255;
+					destData[destPosition + 2] = _color >> 8 & 255;
+					destData[destPosition + 3] = _color & 255;
 					break;
 				case 1:
-					srcData[srcPosition] = colorRGBA & 255;
-					srcData[srcPosition + 1] = colorRGBA >> 24 & 255;
-					srcData[srcPosition + 2] = colorRGBA >> 16 & 255;
-					srcData[srcPosition + 3] = colorRGBA >> 8 & 255;
+					destData[destPosition] = _color & 255;
+					destData[destPosition + 1] = _color >> 24 & 255;
+					destData[destPosition + 2] = _color >> 16 & 255;
+					destData[destPosition + 3] = _color >> 8 & 255;
 					break;
 				}
 				hits++;
+			} else if(copySource) {
+				if(destPremultiplied) {
+					if((srcPixel & 255) == 0) {
+						if(srcPixel != 0) srcPixel = 0;
+					} else if((srcPixel & 255) != 255) {
+						lime_math_color__$RGBA_RGBA_$Impl_$.a16 = lime_math_color__$RGBA_RGBA_$Impl_$.__alpha16[srcPixel & 255];
+						srcPixel = ((srcPixel >> 24 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 24 | ((srcPixel >> 16 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 16 | ((srcPixel >> 8 & 255) * lime_math_color__$RGBA_RGBA_$Impl_$.a16 >> 16 & 255) << 8 | srcPixel & 255 & 255;
+					}
+				}
+				switch(destFormat) {
+				case 2:
+					destData[destPosition] = srcPixel >> 8 & 255;
+					destData[destPosition + 1] = srcPixel >> 16 & 255;
+					destData[destPosition + 2] = srcPixel >> 24 & 255;
+					destData[destPosition + 3] = srcPixel & 255;
+					break;
+				case 0:
+					destData[destPosition] = srcPixel >> 24 & 255;
+					destData[destPosition + 1] = srcPixel >> 16 & 255;
+					destData[destPosition + 2] = srcPixel >> 8 & 255;
+					destData[destPosition + 3] = srcPixel & 255;
+					break;
+				case 1:
+					destData[destPosition] = srcPixel & 255;
+					destData[destPosition + 1] = srcPixel >> 24 & 255;
+					destData[destPosition + 2] = srcPixel >> 16 & 255;
+					destData[destPosition + 3] = srcPixel >> 8 & 255;
+					break;
+				}
 			}
 			srcPosition += 4;
+			destPosition += 4;
 		}
 	}
+	if(hits > 0) image.dirty = true;
 	return hits;
 };
 lime_graphics_utils_ImageDataUtil.unmultiplyAlpha = function(image) {
@@ -9638,7 +9890,7 @@ lime_graphics_utils_ImageDataUtil.unmultiplyAlpha = function(image) {
 	image.buffer.premultiplied = false;
 	image.dirty = true;
 };
-lime_graphics_utils_ImageDataUtil.__ucompare = function(n1,n2) {
+lime_graphics_utils_ImageDataUtil.__pixelCompare = function(n1,n2) {
 	var tmp1;
 	var tmp2;
 	tmp1 = n1 >> 24 & 255;
@@ -11167,6 +11419,7 @@ lime_system_System.getDisplay = function(id) {
 		var display = new lime_system_Display();
 		display.id = 0;
 		display.name = "Generic Display";
+		display.dpi = 96;
 		display.currentMode = new lime_system_DisplayMode(window.screen.width,window.screen.height,60,1);
 		display.supportedModes = [display.currentMode];
 		display.bounds = new lime_math_Rectangle(0,0,display.currentMode.width,display.currentMode.height);
@@ -11654,6 +11907,8 @@ var lime_ui_Window = function(config) {
 		if(Object.prototype.hasOwnProperty.call(config,"x")) this.__x = config.x;
 		if(Object.prototype.hasOwnProperty.call(config,"y")) this.__y = config.y;
 		if(Object.prototype.hasOwnProperty.call(config,"fullscreen")) this.__fullscreen = config.fullscreen;
+		if(Object.prototype.hasOwnProperty.call(config,"borderless")) this.__borderless = config.borderless;
+		if(Object.prototype.hasOwnProperty.call(config,"resizable")) this.__resizable = config.resizable;
 		if(Object.prototype.hasOwnProperty.call(config,"title")) this.__title = config.title;
 	}
 	this.backend = new lime__$backend_html5_HTML5Window(this);
@@ -11695,6 +11950,12 @@ lime_ui_Window.prototype = {
 	,get_display: function() {
 		return this.backend.getDisplay();
 	}
+	,get_borderless: function() {
+		return this.__borderless;
+	}
+	,set_borderless: function(value) {
+		return this.__borderless = this.backend.setBorderless(value);
+	}
 	,get_enableTextEvents: function() {
 		return this.backend.getEnableTextEvents();
 	}
@@ -11719,6 +11980,13 @@ lime_ui_Window.prototype = {
 	}
 	,set_minimized: function(value) {
 		return this.__minimized = this.backend.setMinimized(value);
+	}
+	,get_resizable: function() {
+		return this.__resizable;
+	}
+	,set_resizable: function(value) {
+		this.__resizable = this.backend.setResizable(value);
+		return this.__resizable;
 	}
 	,get_scale: function() {
 		return this.__scale;
@@ -12333,7 +12601,6 @@ lime_net_curl__$CURL_CURL_$Impl_$.GLOBAL_DEFAULT = 3;
 lime_net_curl__$CURL_CURL_$Impl_$.GLOBAL_ACK_EINTR = 4;
 lime_system_BackgroundWorker.MESSAGE_COMPLETE = "__COMPLETE__";
 lime_system_BackgroundWorker.MESSAGE_ERROR = "__ERROR__";
-lime_system_CFFI.lime_cffi_set_finalizer = lime_system_CFFI.load("lime","lime_cffi_set_finalizer",1,false);
 lime_ui_Gamepad.devices = new haxe_ds_IntMap();
 lime_ui_Gamepad.onConnect = new lime_app_Event_$lime_$ui_$Gamepad_$Void();
 lime_ui__$GamepadAxis_GamepadAxis_$Impl_$.LEFT_X = 0;
