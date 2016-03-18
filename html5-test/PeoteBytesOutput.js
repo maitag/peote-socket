@@ -27,9 +27,13 @@ de_peote_io_js_PeoteBytesOutput.prototype = {
 	writeByte: function(b) {
 		this.bytes.push(b);
 	}
-	,writeInt16: function(b) {
+	,writeUInt16: function(b) {
 		this.bytes.push(b & 255);
 		this.bytes.push(b >> 8 & 255);
+	}
+	,writeInt16: function(b) {
+		this.bytes.push(b & 255);
+		if(b >= -32768 && b < 0) this.bytes.push((b >> 8 & 127) + 128); else if(b < 32768) this.bytes.push(b >> 8 & 127); else throw new js__$Boot_HaxeError(haxe_io_Error.Overflow);
 	}
 	,writeInt32: function(b) {
 		this.bytes.push(b & 255);

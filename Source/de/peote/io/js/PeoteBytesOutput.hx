@@ -1,7 +1,7 @@
 package de.peote.io.js;
 
 import haxe.io.Bytes;
-
+import haxe.io.Error;
 /**
  * ...
  * @author Sylvio Sell
@@ -22,9 +22,20 @@ import haxe.io.Bytes;
 		bytes.push(b);
 	}
 	
-	public inline function writeInt16(b:Int):Void {
+	public inline  function writeUInt16(b:Int) {
 		bytes.push( (b >> 0 ) & 255);
 		bytes.push( (b >> 8 ) & 255);
+	}
+	
+	public inline function writeInt16(b:Int):Void {
+		bytes.push( (b >> 0 ) & 255);
+		if (b >= -32768 && b < 0) {
+			bytes.push( ( (b >> 8 ) & 127) + 128  );
+		}
+		else if (b < 32768) {
+			bytes.push( (b >> 8 ) & 127 );
+		}
+		else throw Error.Overflow;
 	}
 	
 	public inline function writeInt32(b:Int):Void {
@@ -52,7 +63,8 @@ import haxe.io.Bytes;
 		writeInt16(s.length);
 		for (i in 0...b.length) bytes.push(b.get(i));
 	}
-	
+	// TODO: only this is need if PeoteBytesOutput extends BytesOutput
+	// only return b property  (this is Array for Javascript)
 	public inline function getBytes():Array<Int> {
 		return(bytes);
 	}

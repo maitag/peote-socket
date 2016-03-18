@@ -25,9 +25,15 @@ de_peote_io_js_PeoteBytesInput.prototype = {
 	readByte: function() {
 		return this.bytes[this.position++];
 	}
-	,readInt16: function() {
+	,readUInt16: function() {
 		this.position += 2;
 		return this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+	}
+	,readInt16: function() {
+		this.position += 2;
+		var output = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		if(output > 32767) output = output - 65536;
+		return output;
 	}
 	,readInt32: function() {
 		this.position += 4;
@@ -60,9 +66,7 @@ de_peote_io_js_PeoteBytesInput.prototype = {
 		return b.getDouble(0);
 	}
 	,readString: function() {
-		var len;
-		this.position += 2;
-		len = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		var len = this.readInt16();
 		var b = haxe_io_Bytes.alloc(len * 4);
 		var _g = 0;
 		while(_g < len) {

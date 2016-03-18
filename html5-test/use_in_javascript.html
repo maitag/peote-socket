@@ -24,6 +24,17 @@
 			var peoteSocket = new PeoteSocket({
 				onConnect: function(connected, msg) {
 					console.log("onConnect:"+connected+" - "+msg);
+					//var output = new PeoteBytesOutput();
+					//output.writeByte(255);
+					//output.writeUInt16(65535);
+					//output.writeInt16(32767);
+					//output.writeInt16(-32768);
+					//output.writeInt32(2147483647);
+					//output.writeInt32(-2147483648);
+					//output.writeFloat(1.2345678);
+					//output.writeDouble(1.2345678901234567890123456789);
+					//output.writeString("Hello Server");
+					//peoteSocket.send(output.getBytes());
 				},
 				onClose: function(msg) {
 					console.log("onClose:"+msg);
@@ -40,6 +51,8 @@
 					{
 						console.log(input.position + ":" + input.readByte());
 					}
+					//console.log(input.readByte());
+					//console.log(input.readUInt16());
 					//console.log(input.readInt16());
 					//console.log(input.readInt32());
 					//console.log(input.readFloat());

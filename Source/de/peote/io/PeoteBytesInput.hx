@@ -29,6 +29,7 @@ import de.peote.io.js.PeoteBytesInput;
 		inline function set_position(p:Int):Int { return bytesInput.position = p; }
 		
 		public inline function readByte():Int { return bytesInput.readByte(); }
+		public inline function readUInt16():Int { return bytesInput.readUInt16(); }
 		public inline function readInt16():Int { return bytesInput.readInt16(); }
 		public inline function readInt32():Int { return bytesInput.readInt32(); }
 		public inline function readFloat():Float { return bytesInput.readFloat(); }

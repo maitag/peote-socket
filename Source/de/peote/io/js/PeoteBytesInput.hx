@@ -30,7 +30,7 @@ import haxe.io.Bytes;
 		return bytes[position++];
 	}
 	
-	public inline function readInt16():Int {
+	public inline function readUInt16():Int {
 		position += 2;
 		return (
 			(bytes[position - 1] << 8 ) |
@@ -38,6 +38,13 @@ import haxe.io.Bytes;
 		);
 	}
 	
+	public inline function readInt16():Int {
+		position += 2;
+		var output:Int = ( bytes[position - 1] << 8 ) | (bytes[position - 2] << 0 );
+		if (output > 32767) output = output - 65536;
+		return ( output );
+	}
+		
 	public inline function readInt32():Int {
 		position += 4;
 		return (
