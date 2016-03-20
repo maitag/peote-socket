@@ -14,6 +14,12 @@ import haxe.io.Error;
 	
 	var bytes:Array<Int>;
 	
+	public var length(get, null):Int;
+
+	function get_length() {
+		return bytes.length;
+	}
+	
 	public function new() {
 		bytes = new Array();
 	}
@@ -60,7 +66,7 @@ import haxe.io.Error;
 	
 	public inline function writeString(s:String):Void {
 		var b = Bytes.ofString(s);
-		writeInt16(s.length);
+		writeUInt16(s.length);
 		for (i in 0...b.length) bytes.push(b.get(i));
 	}
 	// TODO: only this is need if PeoteBytesOutput extends BytesOutput

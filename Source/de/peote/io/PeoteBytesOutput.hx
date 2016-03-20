@@ -13,7 +13,7 @@ import de.peote.io.js.PeoteBytesOutput;
 	{
 		override public function writeString(s:String):Void
 		{
-			writeInt16(s.length);
+			writeUInt16(s.length);
 			super.writeString(s);
 		}
 	}

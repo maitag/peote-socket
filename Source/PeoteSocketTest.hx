@@ -50,7 +50,7 @@ class PeoteSocketTest extends Application {
 		output.writeDouble(1.2345678901234567890123456789);
 		output.writeString("Hello Server");
 		
-		peoteSocket.writeBytes( output.getBytes() ); // send chunk
+		peoteSocket.writeBytes( output.getBytes() );
 	}
 	
 	public inline function onData(peoteBytes:PeoteBytes ):Void 

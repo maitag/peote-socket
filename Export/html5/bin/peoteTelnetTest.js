@@ -30,7 +30,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "254", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.2.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
+	ApplicationMain.config = { build : "258", company : "Sylvio Sell - maitag", file : "peoteTelnetTest", fps : 60, name : "PeoteTelnetTest", orientation : "", packageName : "de.peote.telnet", version : "0.3.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 0, parameters : "{}", resizable : true, stencilBuffer : false, title : "PeoteTelnetTest", vsync : false, width : 0, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1227,23 +1227,40 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
 };
-var de_peote_io_js_PeoteBytesInput = $hx_exports.PeoteBytesInput = function(bytes) {
+var de_peote_io_js_PeoteBytesInput = $hx_exports.PeoteBytesInput = function(b) {
 	this.position = 0;
 	this.length = 0;
-	this.bytes = bytes;
-	this.length = bytes.length;
+	if(b != null) this.bytes = b; else this.bytes = [];
+	this.length = this.bytes.length;
 };
 $hxClasses["de.peote.io.js.PeoteBytesInput"] = de_peote_io_js_PeoteBytesInput;
 de_peote_io_js_PeoteBytesInput.__name__ = true;
 de_peote_io_js_PeoteBytesInput.main = function() {
 };
 de_peote_io_js_PeoteBytesInput.prototype = {
-	readByte: function() {
+	bytesLeft: function() {
+		return this.length - this.position;
+	}
+	,append: function(b,max_pos_before_trim) {
+		if(max_pos_before_trim == null) max_pos_before_trim = 1024;
+		if(max_pos_before_trim != 0 && this.position >= max_pos_before_trim) {
+			this.bytes = this.bytes.splice(this.position,this.length - this.position).concat(b);
+			this.position = 0;
+		} else this.bytes = this.bytes.concat(b);
+		this.length = this.bytes.length;
+	}
+	,readByte: function() {
 		return this.bytes[this.position++];
+	}
+	,readUInt16: function() {
+		this.position += 2;
+		return this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
 	}
 	,readInt16: function() {
 		this.position += 2;
-		return this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		var output = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
+		if(output > 32767) output = output - 65536;
+		return output;
 	}
 	,readInt32: function() {
 		this.position += 4;
@@ -1279,16 +1296,11 @@ de_peote_io_js_PeoteBytesInput.prototype = {
 		var len;
 		this.position += 2;
 		len = this.bytes[this.position - 1] << 8 | this.bytes[this.position - 2];
-		var b = haxe_io_Bytes.alloc(len * 4);
+		var b = haxe_io_Bytes.alloc(len);
 		var _g = 0;
 		while(_g < len) {
 			var i = _g++;
-			b.setInt32(i * 4,(function($this) {
-				var $r;
-				$this.position += 4;
-				$r = $this.bytes[$this.position - 1] << 24 | $this.bytes[$this.position - 2] << 16 | $this.bytes[$this.position - 3] << 8 | $this.bytes[$this.position - 4];
-				return $r;
-			}(this)));
+			b.set(i,this.bytes[this.position++]);
 		}
 		return b.getString(0,len);
 	}

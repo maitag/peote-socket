@@ -19,9 +19,29 @@ import de.peote.io.js.PeoteBytesInput;
 		
 		var bytesInput:BytesInput;
 		
-		public inline function new(bytes:Bytes):Void
+		public inline function new(bytes:Bytes = null):Void
 		{
-			bytesInput = new BytesInput(bytes);
+			if (bytes != null) bytesInput = new BytesInput(bytes);
+			else bytesInput = new BytesInput(Bytes.alloc(0));
+		}
+		
+		public inline function bytesLeft():Int {
+			return length - position;
+		}
+		
+		/*
+		public static function alloc( length : Int ) : PeoteBytesInput {
+			return new PeoteBytesInput( Bytes.alloc(length) );
+		}
+		*/
+		
+		public inline function append(b:Bytes, max_pos_before_trim:Int = 0):Void {
+			// trim allways
+			var bytes:Bytes = Bytes.alloc(bytesLeft() + b.length);
+			if (bytesLeft() > 0) bytes.blit( 0, bytesInput.readAll(), 0, bytesLeft() ); // TODO: optimize (extend BytesInput Class)
+			bytes.blit(bytesLeft(), b, 0, b.length);
+			
+			bytesInput = new BytesInput( bytes );		
 		}
 		
 		inline function get_length():Int { return bytesInput.length; }
@@ -37,7 +57,7 @@ import de.peote.io.js.PeoteBytesInput;
 		
 		public inline function readString():String
 		{
-			return bytesInput.readString(bytesInput.readInt16());
+			return bytesInput.readString(bytesInput.readUInt16());
 		}
 
 	}
