@@ -1,6 +1,6 @@
 package de.peote.io;
-import de.peote.io.js.PeoteBytesOutput;
 
+import de.peote.io.js.PeoteBytesOutput;
 /**
  * ...
  * @author Sylvio Sell
@@ -13,7 +13,8 @@ import de.peote.io.js.PeoteBytesOutput;
 	{
 		override public function writeString(s:String):Void
 		{
-			writeUInt16(s.length);
+			//writeUInt16(s.length); // did not work in flash
+			writeUInt16(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp)
 			super.writeString(s);
 		}
 	}

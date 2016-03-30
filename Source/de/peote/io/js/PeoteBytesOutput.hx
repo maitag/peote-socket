@@ -66,7 +66,8 @@ import haxe.io.Error;
 	
 	public inline function writeString(s:String):Void {
 		var b = Bytes.ofString(s);
-		writeUInt16(s.length);
+		//writeUInt16(s.length);
+		writeUInt16(b.length);
 		for (i in 0...b.length) bytes.push(b.get(i));
 	}
 	// TODO: only this is need if PeoteBytesOutput extends BytesOutput

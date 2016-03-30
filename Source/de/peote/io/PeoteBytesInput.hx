@@ -57,7 +57,8 @@ import de.peote.io.js.PeoteBytesInput;
 		
 		public inline function readString():String
 		{
-			return bytesInput.readString(bytesInput.readUInt16());
+			var len = bytesInput.readUInt16();
+			return bytesInput.readString(len);
 		}
 
 	}
