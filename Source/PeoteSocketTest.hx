@@ -1,24 +1,38 @@
 package;
+/**
+ * ...
+ * @author Sylvio Sell
+ */
+
+
+/*import haxe.io.Bytes;
+import haxe.io.BytesData;*/
 
 import lime.app.Application;
+
+import js.PeoteSocketLoader;
 
 import de.peote.io.PeoteBytes;
 import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytesOutput;
-/*import haxe.io.Bytes;
-import haxe.io.BytesData;*/
-
-
 import de.peote.socket.PeoteSocket;
 
 class PeoteSocketTest extends Application {
 	
 	public var peoteSocket:PeoteSocket;
 	
-	public function new () {
-		
+	public function new ()
+	{
 		super();
 		
+		// for js only it is loading peoteSocketWrapper.swf (TODO: websockets alternatively)
+		PeoteSocketLoader.load(openSocket, function() {
+			trace("Browser doesn't support flash or websockets");
+		});
+	}
+	
+	public function openSocket():Void
+	{
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:" + connected + " - " + msg);

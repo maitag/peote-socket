@@ -2,6 +2,7 @@ package;
 
 import lime.app.Application;
 
+import js.PeoteSocketLoader;
 
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
@@ -13,10 +14,18 @@ class PeoteTelnetTest extends Application {
 	public var peoteSocket:PeoteSocket;
 	public var peoteTelnet:PeoteTelnet;
 	
-	public function new () {
-		
+	public function new ()
+	{
 		super();
 		
+		// for js only it is loading peoteSocketWrapper.swf (TODO: websockets alternatively)
+		PeoteSocketLoader.load(openSocket, function() {
+			trace("Browser doesn't support flash or websockets");
+		});
+	}
+	
+	public function openSocket():Void
+	{
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:"+connected+" - "+msg);

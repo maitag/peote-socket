@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="PeoteTelnetTest" package="de.peote.telnet" version="0.3.0" company="Sylvio Sell - maitag" />
+	<meta title="PeoteTelnetTest" package="de.peote.telnet" version="0.4.0" company="Sylvio Sell - maitag" />
 	<app main="PeoteTelnetTest" path="Export" file="peoteTelnetTest" />
 	
 	<source path="Source" />
 	
 	<haxelib name="lime" />
 	
+	<dependency path="dependencies/swfobject-2.3.js" if="html5" />	
+	
+	<!--<haxedef name="source-map-content" />-->
+
+	<assets path="Export/flash/release/bin/peoteSocketBridge.swf" rename="peoteSocketBridge.swf" embed="false" if="html5" />
 </project>

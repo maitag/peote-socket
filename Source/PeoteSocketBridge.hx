@@ -35,7 +35,6 @@ class PeoteSocketBridge {
 		// -----------------------------------------------------------------------
 		// javascript code -------------------------------------------------------
 			"(function(){
-				if (window.PeoteSocket) return;
 				
 				var Class = function(properties){
 					var klass = function(event_handlers){ 

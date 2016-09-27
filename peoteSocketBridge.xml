@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- flash target only -->
-	<meta title="PeoteSocketBridge" package="de.peote.socket.bridge" version="0.3.0" company="Sylvio Sell - maitag.de" />
+	<meta title="PeoteSocketBridge" package="de.peote.socket.bridge" version="0.4.0" company="Sylvio Sell - maitag.de" />
 	<app main="PeoteSocketBridge" path="Export" file="peoteSocketBridge" />
 	
 	<source path="Source" />
@@ -12,4 +12,8 @@
 	<haxeflag name="-dce" value="full" />
 	<haxedef name="no-traces" />
 	
+	<!--
+	<haxeflag name="-swf-version" value="9" />
+	<haxeflag name="swf-compress-level" value="9" />
+	-->
 </project>
