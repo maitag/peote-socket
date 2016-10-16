@@ -11,28 +11,25 @@ import haxe.Timer;
 import sys.net.Socket;
 import sys.net.Host;
 
+typedef Callbacks = {
+	onConnect:Bool -> String -> Void,
+	onClose:String -> Void,
+	onError:String -> Void,
+	onData:Bytes -> Void
+}
+
 class PeoteSocket
 {
-	private var _onConnectCallback:Bool -> String -> Void;
-	private var _onDataCallback:Bytes -> Void;
-	private var _onCloseCallback:String -> Void;
-	private var _onErrorCallback:String -> Void;
+	private var cb:Callbacks;
 	
 	public var _socket:Socket;
 	
 	private var _timer:Timer;
 	private var stopReading:Bool = true;
 	
-	public function new(param:Dynamic)
+	public function new(callbacks:Callbacks)
 	{
-		_onConnectCallback = param.onConnect;
-		_onDataCallback = param.onData;
-		
-		// TODO
-		_onCloseCallback = param.onClose;
-		_onErrorCallback = param.onError;
-		
-		
+		cb = callbacks;
 	}
 
 	public function readFromSocket():Void
@@ -54,7 +51,7 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				end = true;
-				if (Std.string(unknown) != "Blocked") _onErrorCallback("Unknown exception : "+Std.string(unknown));
+				if (Std.string(unknown) != "Blocked") cb.onError("Unknown exception : "+Std.string(unknown));
 			}
 			if (!end)
 			{	
@@ -62,7 +59,7 @@ class PeoteSocket
 			}
 		}
 			
-		if (data.length > 0) _onDataCallback(Bytes.ofData(data));
+		if (data.length > 0) cb.onData(Bytes.ofData(data));
 		
 		// start timer again
 		_timer = new Timer(60);
@@ -79,15 +76,15 @@ class PeoteSocket
 		}
 		catch (unknown : Dynamic)
 		{
-			if (_onConnectCallback != null) _onConnectCallback(false, "false");
+			if (cb.onConnect != null) cb.onConnect(false, "false");
 			return;
 		}
 		
 		_socket.setBlocking(false);
 		
-		if (_onConnectCallback != null) _onConnectCallback(true, "true");
+		if (cb.onConnect != null) cb.onConnect(true, "true");
 		
-		if (_onDataCallback != null)
+		if (cb.onData != null)
 		{
 			stopReading = false;
 			_timer = new Timer(60);
@@ -113,7 +110,7 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				_onErrorCallback("writeByte(b) exception: "+Std.string(unknown)+" end:"+end);
+				cb.onError("writeByte(b) exception: "+Std.string(unknown)+" end:"+end);
 			}
 		}
 	}
@@ -130,7 +127,7 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				_onErrorCallback("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
+				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
 				//end = true;
 			}
 		}
@@ -148,7 +145,7 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				_onErrorCallback("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
+				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
 				//end = true;
 			}
 		}

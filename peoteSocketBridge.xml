@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- flash target only -->
-	<meta title="PeoteSocketBridge" package="de.peote.socket.bridge" version="0.4.0" company="Sylvio Sell - maitag.de" />
+	<meta title="PeoteSocketBridge" package="de.peote.socket.bridge" version="0.5.0" company="Sylvio Sell - maitag.de" />
 	<app main="PeoteSocketBridge" path="Export" file="peoteSocketBridge" />
 	
 	<source path="Source" />
 
-	<!-- openfl here to generate swf-bridge to use raw sockets in js -->
-	<haxelib name="openfl" />
-	
 	<haxeflag name="-dce" value="full" />
 	<haxedef name="no-traces" />
 	

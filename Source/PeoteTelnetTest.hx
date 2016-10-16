@@ -2,12 +2,13 @@ package;
 
 import lime.app.Application;
 
-import js.PeoteSocketLoader;
+import bridge.PeoteSocketBridge;
 
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
 import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytes;
+import de.peote.io.PeoteBytesOutput;
 
 class PeoteTelnetTest extends Application {
 	
@@ -18,9 +19,19 @@ class PeoteTelnetTest extends Application {
 	{
 		super();
 		
-		// for js only it is loading peoteSocketWrapper.swf (TODO: websockets alternatively)
-		PeoteSocketLoader.load(openSocket, function() {
-			trace("Browser doesn't support flash or websockets");
+		// for js or flash-targets only (cpp will ignore all that proxy-settings and go diretly throught)
+		// webbrowser falls back to swfbridge or websockets (trying both)
+		PeoteSocketBridge.load( {
+			onload: openSocket,
+			prefareWebsockets: true,  // only for js
+			proxys: {
+				proxyServerWS:"localhost",  // only for js
+				proxyPortWS  : 3211,
+				
+				proxyServerSWF:"localhost", // js targets going throught peoteSocketBridge.swf
+				proxyPortSWF  :3211,
+			},
+			onfail: function() { trace("Browser doesn't support flash or websockets"); }
 		});
 	}
 	
@@ -28,7 +39,7 @@ class PeoteTelnetTest extends Application {
 	{
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
-					trace("onConnect:"+connected+" - "+msg);
+					trace("onConnect:" + connected + " - " + msg);
 				},
 				onClose: function(msg) {
 					trace("onClose:"+msg);
@@ -52,6 +63,6 @@ class PeoteTelnetTest extends Application {
 
 	public inline function remoteInput(b:Int):Void
 	{
-		if (b != 13) trace( String.fromCharCode(b) );
+		if (b != 13) trace( "remoteInput "+String.fromCharCode(b) );
 	}
 }

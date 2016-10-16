@@ -19,8 +19,19 @@ class PeoteSocketBridge {
     public static var peoteSocket:Map<String, PeoteSocket>;
     public static function CAN_I_HAS_PEOTESOCKET() { return true; }
 
+	static var proxyServer:String;
+	static var proxyPort:Int = 0;
+	
 	public function new()
 	{
+		var onLoadCallback:String = flash.Lib.current.loaderInfo.parameters.onloadcallback;
+		proxyServer = flash.Lib.current.loaderInfo.parameters.proxyserver;
+		if (flash.Lib.current.loaderInfo.parameters.proxyport != null)
+		{
+			proxyPort = Std.parseInt(flash.Lib.current.loaderInfo.parameters.proxyport);			
+		}
+		//ExternalInterface.call("console.log","please debug me ;)");
+		
 		peoteSocket = new Map<String, PeoteSocket>();
        
 		// js oop-kung-fu like here: http://ionel-whatever-code.googlecode.com/svn/trunk/HaxeSocketBridge/
@@ -74,6 +85,7 @@ class PeoteSocketBridge {
 				
 				window.PeoteSocket._instances = [];
 				
+				// TODO: optimize here to give embed-element-id by flash.Lib.current.loaderInfo.parameters.elementid
 				var f = function(tag){
 					var elems = document.getElementsByTagName(tag);
 					for (var i = 0; i < elems.length; i++)
@@ -85,20 +97,29 @@ class PeoteSocketBridge {
 		// -----------------------------------------------------------------------
 		);
 		
-        if (flash.Lib.current.loaderInfo.parameters.onloadcallback != null)
-            ExternalInterface.call(flash.Lib.current.loaderInfo.parameters.onloadcallback);
+        if (onLoadCallback != null)
+            ExternalInterface.call(onLoadCallback);
 		else ExternalInterface.call("PeoteSocketBridge");
 	}
 	
     public static function connect(id:String, server:String, port:Int) {
         var p:PeoteSocket = peoteSocket.get(id);
-        if (p != null)  {
-           p.connect(server, port);
+        var _server:String = (proxyServer != null) ? proxyServer : server;
+        var _port:Int = (proxyPort != 0) ? proxyPort : port;
+		// TODO: wenn proxy dann immer gleich nach dem connecten die IP+Port für den Forwarder senden
+		if (p != null)  {
+           p.connect(_server, _port);
         } else {
             p = new PeoteSocket(id);	
-			p.connect(server, port);
+			p.connect(_server, _port);
             peoteSocket.set(id, p);
-        }       
+        }
+		// for proxys send adress to forward
+		if (_server != server || _port != port)
+		{
+			p.setForward(server,port);
+		}
+
     }
 	
     public static function close(id:String) {

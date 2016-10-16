@@ -1,40 +1,57 @@
-package js;
+package bridge.js;
 /**
  * ...
  * @author Sylvio Sell
  */
-import haxe.Timer;
+
 
 #if js
+
+import haxe.Timer;
+
 import js.Browser;
 import js.swfobject.SWFObject;
-#end
 
-class PeoteSocketLoader
+
+typedef Proxys = {
+	?proxyServerWS:String,
+	?proxyPortWS:Int,
+	
+	?proxyServerSWF:String,
+	?proxyPortSWF:Int
+}
+
+
+typedef Param = {
+	onload:Void->Void,
+	?onfail:Void->Void,
+	?prefareWebsockets:Bool,
+	?proxys:Proxys
+}
+
+
+class PeoteSocketBridge
 {
-	#if js
-	public static var onload:Void->Void;
-	public static var onfail:Void->Void;
+	public static var proxys:Proxys;
+	
+	public static var onload: Void->Void;
+	public static var onfail: Void->Void;
+	
 	
 	static var checkedSWF:Bool = false;
-	static var checkedWS:Bool  = false;
+	static var checkedWS :Bool = false;
 	
 	static var swfBridgeReady:Bool = false;
-	#end
 	
-	public static function load(onload:Void->Void, ?onfail:Void->Void, prefareWebsockets:Bool=false):Void
+	public static function load( param:Param ):Void
 	{
-		#if js
-		PeoteSocketLoader.onload = onload;
-		PeoteSocketLoader.onfail = onfail;
+		proxys = param.proxys;
+		onload = param.onload;
+		onfail = param.onfail;
 		
-		if (prefareWebsockets) loadWS() else loadSWF();
-		#else
-		onload(); // no js (natives go throught)
-		#end
+		if (param.prefareWebsockets) loadWS() else loadSWF();
 	}
 	
-	#if js
 	public static function loadSWF():Void
 	{
 		if (checkedSWF) return;
@@ -44,7 +61,7 @@ class PeoteSocketLoader
 		trace("FlashPlayerVersion:" + SWFObject.getFlashPlayerVersion());
 		if (SWFObject.hasFlashPlayerVersion("11.2.0"))
 		{
-			SWFObject.switchOffAutoHideShow();
+			//SWFObject.switchOffAutoHideShow();
 			
 			SWFObject.addDomLoadEvent( function() {
 			//SWFObject.addLoadEvent( function() {
@@ -62,14 +79,22 @@ class PeoteSocketLoader
 				var attributes = { data:"peoteSocketBridge.swf", width:"1", height:"1" };
 				var params = {
 					//"flashvars": "onloadcallback=PeoteSocketBridge", // <- is default
-					"flashvars": "onloadcallback=js.PeoteSocketLoader.peoteSocketBridgeAvailable",
+					"flashvars": "onloadcallback=bridge.js.PeoteSocketBridge.peoteSocketBridgeAvailable",
 					"menu": "false",
 					"scale": "noScale",
-					"allowScriptAccess": "always",
+					"allowScriptAccess": "always", //"sameDomain" works to
 					"allowNetworking": "true",
 					"bgcolor": "#000000"
 				};
-				var myObject = SWFObject.createSWF(attributes, params, id);
+				if (proxys.proxyServerSWF != null)
+				{
+					params.flashvars += "&proxyserver=" + proxys.proxyServerSWF;
+				}
+				if (proxys.proxyPortSWF != null)
+				{
+					params.flashvars += "&proxyport=" + proxys.proxyPortSWF;
+				}
+				var myObject = SWFObject.createSWF(attributes, params, id); //SWFObject.embedSWF(
 				myObject.style.position = "absolute";
 				//myObject.style.visibility = "hidden"; // ups .. did NOT work on Microsofts Internet-Explorer 10 !!!!!!!!!
 
@@ -117,7 +142,7 @@ class PeoteSocketLoader
 		trace("swf-bridge is READY");
 		onload();
 	}
-	#end
-	
-	
+
 }
+
+#end

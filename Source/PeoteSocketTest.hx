@@ -5,12 +5,9 @@ package;
  */
 
 
-/*import haxe.io.Bytes;
-import haxe.io.BytesData;*/
-
 import lime.app.Application;
 
-import js.PeoteSocketLoader;
+import bridge.PeoteSocketBridge;
 
 import de.peote.io.PeoteBytes;
 import de.peote.io.PeoteBytesInput;
@@ -25,9 +22,19 @@ class PeoteSocketTest extends Application {
 	{
 		super();
 		
-		// for js only it is loading peoteSocketWrapper.swf (TODO: websockets alternatively)
-		PeoteSocketLoader.load(openSocket, function() {
-			trace("Browser doesn't support flash or websockets");
+		// for js or flash-targets only (cpp will ignore all that proxy-settings and go diretly throught)
+		// webbrowser falls back to swfbridge or websockets (trying both)
+		PeoteSocketBridge.load( {
+			onload: openSocket,
+			prefareWebsockets: true,  // only for js
+			proxys: {
+				proxyServerWS:"localhost",  // only for js
+				proxyPortWS  : 3211,
+				
+				proxyServerSWF:"localhost", // js targets going throught peoteSocketBridge.swf
+				proxyPortSWF  :3211,
+			},
+			onfail: function() { trace("Browser doesn't support flash or websockets"); }
 		});
 	}
 	
@@ -36,7 +43,7 @@ class PeoteSocketTest extends Application {
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:" + connected + " - " + msg);
-					//sendTestData();
+					sendTestData();
 				},
 				onClose: function(msg) {
 					trace("onClose:"+msg);
@@ -54,7 +61,11 @@ class PeoteSocketTest extends Application {
 	{	
 		var output:PeoteBytesOutput = new PeoteBytesOutput();
 		
-		output.writeByte(255);
+		output.writeByte(127);
+		output.writeByte(128);
+		output.writeByte(129);
+		output.writeByte(0);
+		/*
 		output.writeUInt16(65535);
 		output.writeInt16(32767);
 		output.writeInt16(-32768);
@@ -63,8 +74,12 @@ class PeoteSocketTest extends Application {
 		output.writeFloat(1.2345678);
 		output.writeDouble(1.2345678901234567890123456789);
 		output.writeString("Hello Server");
-		
+		*/
 		peoteSocket.writeBytes( output.getBytes() );
+		/*peoteSocket.writeByte( 127 );
+		peoteSocket.writeByte( 128 );
+		peoteSocket.writeByte( 129 );
+		*/
 	}
 	
 	public inline function onData(peoteBytes:PeoteBytes ):Void 

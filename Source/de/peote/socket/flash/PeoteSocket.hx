@@ -16,16 +16,23 @@ import flash.events.TimerEvent;
 import haxe.io.BytesData;
 import haxe.io.Bytes;
 
+import de.peote.io.PeoteBytesOutput;
+import bridge.PeoteSocketBridge;
+
 class PeoteSocket 
 {
-	private var _onConnectCallback:Bool -> String -> Void;
-	private var _onDataCallback:Bytes -> Void;
-	private var _onCloseCallback:String -> Void;
-	private var _onErrorCallback:String -> Void;
-	
 	public var _socket:Socket;
 
-	private var _timer:Timer;
+	var _onConnectCallback:Bool -> String -> Void;
+	var _onDataCallback:Bytes -> Void;
+	var _onCloseCallback:String -> Void;
+	var _onErrorCallback:String -> Void;
+	
+	var _timer:Timer;
+	
+	var is_proxy:Bool = false;
+	var forward_server:String;
+	var forward_port:Int;
 
 	public function new(param:Dynamic) 
 	{
@@ -48,6 +55,15 @@ class PeoteSocket
 		});
 		*/
 		if (_onConnectCallback != null) _socket.addEventListener(Event.CONNECT, function(e:Event) {
+			
+			// for proxy send adress to forward
+			if (is_proxy)
+			{
+				var output:PeoteBytesOutput = new PeoteBytesOutput();
+				output.writeString(forward_server);
+				output.writeUInt16(forward_port);
+				writeBytes( output.getBytes() );
+			}
 			_onConnectCallback(_socket.connected, e.toString());
 		});
 
@@ -69,10 +85,26 @@ class PeoteSocket
 		}
 	}
 	
+	public function setForward(server:String, port:Int):Void
+	{	
+		is_proxy = true;
+		forward_server = server;
+		forward_port = port;
+	}
+	
 	public function connect(server:String, port:Int):Void
 	{	
+		var _server:String = (PeoteSocketBridge.proxys.proxyServerSWF != null) ? PeoteSocketBridge.proxys.proxyServerSWF : server;
+		var _port:Int = (PeoteSocketBridge.proxys.proxyPortSWF != null) ? PeoteSocketBridge.proxys.proxyPortSWF : port;
+
 		//Security.loadPolicyFile("xmlsocket://"+server+":843"); 
-		try _socket.connect(server, port) catch (unknown : Dynamic) {_onErrorCallback("ERROR: _socket.connect(server, port) :" + unknown);}
+		try _socket.connect(_server, _port) catch (unknown : Dynamic) {_onErrorCallback("ERROR: _socket.connect(_server, _port) :" + unknown);}
+		
+		// for proxys send adress to forward
+		if (_server != server || _port != port)
+		{
+			setForward(server, port);
+		}
 	}
 
 	public function close():Void

@@ -9,7 +9,9 @@ import js.html.WebSocket;
 import js.html.BinaryType;
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
-import haxe.io.Bytes;
+import bridge.js.PeoteSocketBridge;
+import de.peote.io.PeoteBytes;
+import de.peote.io.PeoteBytesOutput;
 #end
 
 #if cpp
@@ -21,84 +23,134 @@ typedef PeoteSocket = de.peote.socket.flash.PeoteSocket;
 #end
 
 
-// wrapping around pre generated PeoteSocketBridge.swf
 
 #if js
+typedef Callbacks = {
+	onConnect:Bool -> String -> Void,
+	onClose:String -> Void,
+	onError:String -> Void,
+	onData:PeoteBytes -> Void
+}
+
+// wrapping around pre generated PeoteSocketBridge.swf
 @:native('PeoteSocket') extern class PeoteSocket
 {
-	public function new (param:Dynamic) {}
+	public function new (callbacks:Callbacks) {}
 
 	public function connect(server:String, port:Int):Void {}
 	public function close():Void {}
 	public function writeByte(b:Int):Void {}
-	public function writeBytes(data:Array<Int>):Void {}
+	public function writeBytes(data:PeoteBytes):Void {}
 	public function flush():Void {}	
 }
 
 
-// will be overridden by peoteSocketBridge.swf on load---
-@:expose("PeoteSocket") class PeoteSocketWS {
+// wrapping around websockets
+@:expose("PeoteSocket") class PeoteWebSocket {
 	
-	public function new (param:Dynamic)
+	var ws:WebSocket;
+	var cb:Callbacks;
+	
+	var is_proxy:Bool = false;
+	var	forward_server:String;
+	var forward_port:Int;
+	
+	public function new (callbacks:Callbacks)
 	{
-		trace('new PeoteSocketWS ($param)');
+		trace('new PeoteWebSocket ($callbacks)');
+		this.cb = callbacks;
+		
 	}
-
 	public function connect(server:String, port:Int):Void
 	{
-		trace('CONNECT $server:$port');
-	}
-	public function close():Void {}
-	public function writeByte(b:Int):Void {}
-	public function writeBytes(data:Array<Int>):Void {}
-	public function flush():Void {}	
+		var _server:String = (PeoteSocketBridge.proxys.proxyServerWS != null) ? PeoteSocketBridge.proxys.proxyServerWS : server;
+		var _port:Int = (PeoteSocketBridge.proxys.proxyPortWS != null) ? PeoteSocketBridge.proxys.proxyPortWS : port;
+		
+		trace('CONNECT $_server:$_port');
 
-	//TODO
-	/*public function new () {
-		
-		var ws = new WebSocket("ws://localhost:3211"); 
-		
-		trace('binaryType ${ws.binaryType}');
-		trace('protocol: ${ws.protocol}');
+		ws = new WebSocket("ws://"+_server + ":" + _port); 
 		
 		ws.binaryType = BinaryType.ARRAYBUFFER;
+		ws.onopen    = onOpen;
+		ws.onclose   = onClose;
+		ws.onerror   = onError;
+		ws.onmessage = onMessage;
 		
-		
-		ws.onopen = function()
+		// for proxys send adress to forward
+		if (_server != server || _port != port)
 		{
-    		trace("CONNECT");
-			trace('bufferedAmount: ${ws.bufferedAmount}');
-			
-   			//ws.send("TestString");
-			var ab:ArrayBuffer = new ArrayBuffer(3);
-			var bytes:Uint8Array = new Uint8Array(ab, 0, 3);
-			//bytes.set([65, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-			bytes.set([65,66,67]);
-			
-   			ws.send(ab);
-			
-			trace('bufferedAmount: ${ws.bufferedAmount}');
-			trace('binaryType: ${ws.binaryType}');
-			trace('protocol: ${ws.protocol}');
-		};
-
-		ws.onmessage = function(e)
-		{
-   			trace("RECEIVE: " + e.data);
-			var bytes:Bytes = Bytes.ofString(e.data);
-			for (i in 0...bytes.length)
-			{
-				trace(bytes.get(i));				
-			}
-		};
-		
-		ws.onclose = function()
-		{
-   			trace("DISCONNECT");
-		};
-
-	}*/
+			is_proxy = true;
+			forward_server = server;
+			forward_port = port;
+		}
+	}
 	
+	public function close():Void
+	{
+		ws.close();
+	}
+	
+	public function writeByte(b:Int):Void
+	{
+		trace("writeByte:" + b);
+		ws.send(new Uint8Array([b]), { binary: true, mask: false });
+		trace('bufferedAmount: ${ws.bufferedAmount}');
+	}
+	
+	public function writeBytes(data:PeoteBytes):Void
+	{
+		trace("writeBytes - number of bytes sending:" + data.length);
+		//ws.send("TestString");
+		//ws.send(new Uint8Array(data));
+		ws.send(new Uint8Array(data), { binary: true, mask: false });
+		trace('bufferedAmount: ${ws.bufferedAmount}');
+	}
+	
+	public function flush():Void
+	{
+		// how realize this with websockets?
+	}	
+
+	// events -------------------
+	
+	function onOpen()
+	{
+		trace("onOpen");
+		trace('binaryType: ${ws.binaryType}');
+		trace('protocol: ${ws.protocol}');
+		
+		// for proxys send adress to forward
+		if (is_proxy)
+		{
+			var output:PeoteBytesOutput = new PeoteBytesOutput();
+			output.writeString(forward_server);
+			output.writeUInt16(forward_port);
+			writeBytes( output.getBytes() );
+		}
+
+		cb.onConnect(true,"connect");
+	};
+	
+	function onClose()
+	{
+		trace("onClose");
+		cb.onClose("closed");
+	};
+	
+	function onError(s:String)
+	{
+		trace("onError");
+		cb.onError(s);
+	};	
+
+	function onMessage(e:Dynamic)
+	{
+		trace("onMessage - " + e.data + " - number of bytes comming in: " + e.data.byteLength);
+		//var ab:ArrayBuffer = e.data;
+		//var a:Array<Int> = cast new Uint8Array(ab, 0, ab.byteLength);
+		cb.onData( cast new Uint8Array(e.data, 0, e.data.byteLength) );
+		
+	};
 	
 }
 

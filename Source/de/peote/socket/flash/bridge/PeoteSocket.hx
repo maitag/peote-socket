@@ -27,6 +27,10 @@ class PeoteSocket extends de.peote.socket.flash.PeoteSocket
 			onError: this.onError
 		});
 	}
+	override public function connect(server:String, port:Int):Void
+	{	
+		try _socket.connect(_server, _port) catch (unknown : Dynamic) {_onErrorCallback("ERROR: _socket.connect(_server, _port) :" + unknown);}
+	}
 
 	// PeoteSocketBridge Event Callbacks - flashplayer calls Javascript-Functions back :)=
 	public inline function onData(bytes:Bytes):Void

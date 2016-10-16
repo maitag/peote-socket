@@ -24,7 +24,7 @@ import haxe.io.Error;
 		bytes = new Array();
 	}
 	
-	public inline function writeByte(b:Int):Void {
+	public inline function writeByte(b:UInt):Void {
 		bytes.push(b);
 	}
 	
