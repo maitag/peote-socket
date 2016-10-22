@@ -44,7 +44,7 @@ class PeoteTelnet
 		this.width = width;
 		this.height = height;
 	}
-	/*
+	
 	public inline function writeByte(b:Int):Void
 	{
 		peoteSocket.writeByte(b);
@@ -60,12 +60,12 @@ class PeoteTelnet
 		#end
 		peoteSocket.flush();
 	}
-	*/
+	
 	public inline function parseTelnetData(input:PeoteBytesInput, remoteInput:Int->Void):Void
 	{
 		for (i in 0...input.length)
 		{
-			var b:Int = input.readByte(); trace("b="+b);
+			var b:Int = input.readByte();
 			
 			switch (state)
 			{

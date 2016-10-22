@@ -106,7 +106,7 @@ class PeoteSocketBridge {
         var p:PeoteSocket = peoteSocket.get(id);
         var _server:String = (proxyServer != null) ? proxyServer : server;
         var _port:Int = (proxyPort != 0) ? proxyPort : port;
-		// TODO: wenn proxy dann immer gleich nach dem connecten die IP+Port für den Forwarder senden
+		
 		if (p != null)  {
            p.connect(_server, _port);
         } else {

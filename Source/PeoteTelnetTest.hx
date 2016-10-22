@@ -6,8 +6,8 @@ import bridge.PeoteSocketBridge;
 
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
-import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytes;
+import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytesOutput;
 
 class PeoteTelnetTest extends Application {

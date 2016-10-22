@@ -46,7 +46,7 @@ typedef Callbacks = {
 
 
 // wrapping around websockets
-@:expose("PeoteSocket") class PeoteWebSocket {
+@:keep @:expose("PeoteSocket") class PeoteWebSocket {
 	
 	var ws:WebSocket;
 	var cb:Callbacks;
@@ -66,9 +66,9 @@ typedef Callbacks = {
 		var _server:String = (PeoteSocketBridge.proxys.proxyServerWS != null) ? PeoteSocketBridge.proxys.proxyServerWS : server;
 		var _port:Int = (PeoteSocketBridge.proxys.proxyPortWS != null) ? PeoteSocketBridge.proxys.proxyPortWS : port;
 		
-		trace('CONNECT $_server:$_port');
+		//trace('CONNECT $_server:$_port');
 
-		ws = new WebSocket("ws://"+_server + ":" + _port); 
+		try {ws = new WebSocket("ws://"+_server + ":" + _port);} 
 		
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		ws.onopen    = onOpen;
@@ -92,18 +92,18 @@ typedef Callbacks = {
 	
 	public function writeByte(b:Int):Void
 	{
-		trace("writeByte:" + b);
+		//trace("writeByte:" + b);
 		ws.send(new Uint8Array([b]), { binary: true, mask: false });
-		trace('bufferedAmount: ${ws.bufferedAmount}');
+		//trace('bufferedAmount: ${ws.bufferedAmount}');
 	}
 	
 	public function writeBytes(data:PeoteBytes):Void
 	{
-		trace("writeBytes - number of bytes sending:" + data.length);
+		//trace("writeBytes - number of bytes sending:" + data.length);
 		//ws.send("TestString");
 		//ws.send(new Uint8Array(data));
 		ws.send(new Uint8Array(data), { binary: true, mask: false });
-		trace('bufferedAmount: ${ws.bufferedAmount}');
+		//trace('bufferedAmount: ${ws.bufferedAmount}');
 	}
 	
 	public function flush():Void
@@ -115,9 +115,9 @@ typedef Callbacks = {
 	
 	function onOpen()
 	{
-		trace("onOpen");
-		trace('binaryType: ${ws.binaryType}');
-		trace('protocol: ${ws.protocol}');
+		//trace("onOpen");
+		//trace('binaryType: ${ws.binaryType}');
+		//trace('protocol: ${ws.protocol}');
 		
 		// for proxys send adress to forward
 		if (is_proxy)
@@ -133,19 +133,19 @@ typedef Callbacks = {
 	
 	function onClose()
 	{
-		trace("onClose");
+		//trace("onClose");
 		cb.onClose("closed");
 	};
 	
 	function onError(s:String)
 	{
-		trace("onError");
+		//trace("onError");
 		cb.onError(s);
 	};	
 
 	function onMessage(e:Dynamic)
 	{
-		trace("onMessage - " + e.data + " - number of bytes comming in: " + e.data.byteLength);
+		//trace("onMessage - " + e.data + " - number of bytes comming in: " + e.data.byteLength);
 		//var ab:ArrayBuffer = e.data;
 		//var a:Array<Int> = cast new Uint8Array(ab, 0, ab.byteLength);
 		cb.onData( cast new Uint8Array(e.data, 0, e.data.byteLength) );
