@@ -1,7 +1,7 @@
-### PeoteSocket - Raw Socket Client Library
+### PeoteSocket - Raw TCP Socket Client Library
 
 This Library is written in [Haxe](http://haxe.org) to provide simple Socket-API  
-for multiple targets (cpp, java, html5, flash). 
+for multiple targets (cpp, android, html5, flash). 
 
 Inside webbrowser it gives fallback-support (websocket or swf-socket-bridge) and  
 on server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to wrap around raw-tcp.  
