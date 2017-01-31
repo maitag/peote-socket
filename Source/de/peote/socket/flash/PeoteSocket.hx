@@ -94,10 +94,15 @@ class PeoteSocket
 	
 	public function connect(server:String, port:Int):Void
 	{	
-		var _server:String = (PeoteSocketBridge.proxys.proxyServerSWF != null) ? PeoteSocketBridge.proxys.proxyServerSWF : server;
-		var _port:Int = (PeoteSocketBridge.proxys.proxyPortSWF != null) ? PeoteSocketBridge.proxys.proxyPortSWF : port;
-
-		//Security.loadPolicyFile("xmlsocket://"+server+":843"); 
+		var _server:String = server;
+		var _port:Int = port;
+		
+		if (PeoteSocketBridge.proxys != null)
+		{
+			if (PeoteSocketBridge.proxys.proxyServerSWF != null) _server = PeoteSocketBridge.proxys.proxyServerSWF;
+			if (PeoteSocketBridge.proxys.proxyPortSWF   != null) _port   = PeoteSocketBridge.proxys.proxyPortSWF;
+		}
+		
 		try _socket.connect(_server, _port) catch (unknown : Dynamic) {_onErrorCallback("ERROR: _socket.connect(_server, _port) :" + unknown);}
 		
 		// for proxys send adress to forward

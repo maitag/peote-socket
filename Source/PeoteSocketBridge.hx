@@ -22,7 +22,7 @@ class PeoteSocketBridge {
 	static var proxyServer:String;
 	static var proxyPort:Int = 0;
 	
-	public function new()
+	static public function main()
 	{
 		var onLoadCallback:String = flash.Lib.current.loaderInfo.parameters.onloadcallback;
 		proxyServer = flash.Lib.current.loaderInfo.parameters.proxyserver;
@@ -76,7 +76,7 @@ class PeoteSocketBridge {
 						window.PeoteSocket._bridge.writeByte(this._instance, byte);
 					},
 					writeBytes: function(data) {
-						window.PeoteSocket._bridge.writeBytes(this._instance, data);
+						window.PeoteSocket._bridge.writeBytes(this._instance, window.PeoteSocketTool.fromBytes(data));
 					},
 					flush: function() {
 						window.PeoteSocket._bridge.flush(this._instance);
@@ -134,16 +134,17 @@ class PeoteSocketBridge {
 	
     public static function writeBytes(id:String, data:Array<Int>) {
         var p:PeoteSocket = peoteSocket.get(id);
-        var ba:ByteArray = new ByteArray();
-		for (i in 0...data.length) ba.writeByte(data[i]);
-		if (p != null) p.writeBytes(Bytes.ofData(ba));
+		if (p != null)
+		{
+			var ba:ByteArray = new ByteArray();
+			for (i in 0...data.length) ba.writeByte(data[i]);
+			p.writeBytes(Bytes.ofData(ba));
+		}
     }
 	
     public static function flush(id:String) {
         var p:PeoteSocket = peoteSocket.get(id);
         if (p != null) p.flush();
     }
-	
-
 	
 }

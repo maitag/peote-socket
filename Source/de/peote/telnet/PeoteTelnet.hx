@@ -53,11 +53,7 @@ class PeoteTelnet
 	
 	public inline function writeBytes(bytes:Bytes):Void
 	{
-		#if js
-		peoteSocket.writeBytes([ for (i in 0...bytes.length) bytes.get(i) ]);
-		#else
 		peoteSocket.writeBytes(bytes);
-		#end
 		peoteSocket.flush();
 	}
 	

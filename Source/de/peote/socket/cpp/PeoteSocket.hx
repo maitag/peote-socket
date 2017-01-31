@@ -111,6 +111,7 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeByte(b) exception: "+Std.string(unknown)+" end:"+end);
+				end = true; // TODO -> Try AGAIN on fail !
 			}
 		}
 	}
@@ -128,7 +129,7 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true;
+				end = true; // TODO -> Try AGAIN on fail !
 			}
 		}
 	}
@@ -146,7 +147,7 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true;
+				end = true; // TODO -> Try AGAIN on fail !
 			}
 		}
 	}

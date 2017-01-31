@@ -30,8 +30,14 @@ typedef Param = {
 }
 
 
+#if expose_js
+@:keep
+@:expose("PeoteSocketBridge")
+#end
 class PeoteSocketBridge
 {
+	#if expose_js static function main() {}#end
+
 	public static var proxys:Proxys;
 	
 	public static var onload: Void->Void;

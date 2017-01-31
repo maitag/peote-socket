@@ -1,0 +1,9 @@
+-main PeoteSocketBridge
+-cp Source
+-dce full
+-swf-version 11.2
+-D swf-compress-level=9
+-D no-traces
+-D dce=full
+-swf Export/flash/release/bin/peoteSocketBridge.swf
+-swf-header 1:1:60:000000

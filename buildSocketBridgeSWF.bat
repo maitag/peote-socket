@@ -1,2 +1,2 @@
-lime build peoteSocketBridge.xml flash
+haxe peoteSocketBridge.hxml
 pause

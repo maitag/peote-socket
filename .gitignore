@@ -1,5 +1,4 @@
-Export/flash/release/haxe
-Export/flash/debug/haxe
+Export/flash/
 Export/windows
 Export/android
 Export/html5

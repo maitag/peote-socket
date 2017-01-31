@@ -1,12 +1,12 @@
 package;
 
+import haxe.io.Bytes;
 import lime.app.Application;
 
 import bridge.PeoteSocketBridge;
 
 import de.peote.socket.PeoteSocket;
 import de.peote.telnet.PeoteTelnet;
-import de.peote.io.PeoteBytes;
 import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytesOutput;
 
@@ -50,13 +50,13 @@ class PeoteTelnetTest extends Application {
 				onData: onData
 		});
 		peoteTelnet = new PeoteTelnet(peoteSocket);
-		peoteSocket.connect("192.168.1.50", 23); // be sure there is running telnet server
+		peoteSocket.connect("192.168.1.81", 23); // be sure there is running telnet server
 		
 	}
 	
-	public inline function onData(peoteBytes:PeoteBytes ):Void 
+	public inline function onData(bytes:Bytes ):Void 
 	{
-		var input:PeoteBytesInput = new PeoteBytesInput(peoteBytes);
+		var input:PeoteBytesInput = new PeoteBytesInput(bytes);
 		peoteTelnet.parseTelnetData( input, remoteInput );
 		
 	}

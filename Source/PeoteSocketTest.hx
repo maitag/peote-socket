@@ -5,11 +5,10 @@ package;
  */
 
 
+import haxe.io.Bytes;
 import lime.app.Application;
 
 import bridge.PeoteSocketBridge;
-
-import de.peote.io.PeoteBytes;
 import de.peote.io.PeoteBytesInput;
 import de.peote.io.PeoteBytesOutput;
 import de.peote.socket.PeoteSocket;
@@ -21,20 +20,22 @@ class PeoteSocketTest extends Application {
 	public function new ()
 	{
 		super();
-		
-		// for js or flash-targets only (cpp will ignore all that proxy-settings and go diretly throught)
-		// webbrowser falls back to swfbridge or websockets (trying both)
+		// provides adresses for peote-proxy server that handles flashpolicy and websockets
+		// only relevant for js or flash targets
+		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			prefareWebsockets: true,  // only for js
+			//prefareWebsockets: true,
 			proxys: {
-				proxyServerWS:"localhost",  // only for js
+				proxyServerWS:"localhost",  // js websockets
+				//proxyServerWS:"192.168.1.81",
 				proxyPortWS  : 3211,
 				
-				proxyServerSWF:"localhost", // js targets going throught peoteSocketBridge.swf
+				proxyServerSWF:"localhost", // js throught peoteSocketBridge.swf
+				//proxyServerSWF:"192.168.1.81",
 				proxyPortSWF  :3211,
 			},
-			onfail: function() { trace("Browser doesn't support flash or websockets"); }
+			onfail: function() { trace("Browser doesn't support flash- or websockets"); }
 		});
 	}
 	
@@ -53,8 +54,10 @@ class PeoteSocketTest extends Application {
 				},
 				onData: onData
 		});
-		peoteSocket.connect("192.168.1.50", 23);
-		
+		peoteSocket.connect("192.168.1.81", 23);
+		//peoteSocket.connect("127.0.0.1", 7685);
+		//peoteSocket.connect("mud.tubmud.de", 7680);
+		//peoteSocket.connect("lem", 23);
 	}
 	
 	public inline function sendTestData():Void
@@ -73,20 +76,23 @@ class PeoteSocketTest extends Application {
 		output.writeInt32(-2147483648);
 		output.writeFloat(1.2345678);
 		output.writeDouble(1.2345678901234567890123456789);
-		output.writeString("Hello Server");
+		
+		output.writeString("Hello Server/n");
+		output.writeByte(0);
 		*/
 		peoteSocket.writeBytes( output.getBytes() );
-		/*peoteSocket.writeByte( 127 );
+		/*
+		peoteSocket.writeByte( 127 );
 		peoteSocket.writeByte( 128 );
 		peoteSocket.writeByte( 129 );
 		*/
 	}
 	
-	public inline function onData(peoteBytes:PeoteBytes ):Void 
+	public inline function onData(bytes:Bytes ):Void 
 	{
 		trace("onData:");
 
-		var input:PeoteBytesInput = new PeoteBytesInput(peoteBytes);
+		var input:PeoteBytesInput = new PeoteBytesInput(bytes);
 		trace( "data bytes length = " + input.length);
 		while (input.position < input.length)
 		{

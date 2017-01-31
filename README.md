@@ -52,6 +52,5 @@ function openSocket() {
 
 ####TODO:
 - better error-handling
-- more testsscripts for peote-proxy
+- more tests scripts for peote-proxy
 - updating telnet/mud-client
-- small js-lib to use from pure javascript to

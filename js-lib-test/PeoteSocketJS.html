@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+
+	<title>PeoteSocket via Javascript</title>
+	
+	<script src="swfobject-2.3.js" type="text/javascript"></script>
+	<script src="PeoteSocket.js" type="text/javascript"></script>
+	
+	<script>
+		// starter here -> peoteSocketBridge.swf raw socket wrapper is available
+		PeoteSocketBridge.load( {
+			onload: openSocket,
+			//prefareWebsockets: true,
+			proxys: {
+				proxyServerWS:"localhost",  // js websockets
+				//proxyServerWS:"192.168.1.81",
+				proxyPortWS  : 3211,
+				
+				proxyServerSWF:"localhost", // js throught peoteSocketBridge.swf
+				//proxyServerSWF:"192.168.1.81",
+				proxyPortSWF  :3211,
+			},
+			onfail: function() { trace("Browser doesn't support flash- or websockets"); }
+		});
+		
+		function openSocket() {
+			console.log("openSocket");
+			
+			// DO it in Javascript to use RAW socket ofer swf-bridge
+			var peoteSocket = new PeoteSocket({
+				onConnect: function(connected, msg) {
+					console.log("onConnect:"+connected+" - "+msg);
+					//var output = new PeoteBytesOutput();
+					//output.writeByte(255);
+					//output.writeUInt16(65535);
+					//output.writeInt16(32767);
+					//output.writeInt16(-32768);
+					//output.writeInt32(2147483647);
+					//output.writeInt32(-2147483648);
+					//output.writeFloat(1.2345678);
+					//output.writeDouble(1.2345678901234567890123456789);
+					//output.writeString("Hello Server");
+					//peoteSocket.send(output.getBytes());
+				},
+				onClose: function(msg) {
+					console.log("onClose:"+msg);
+				},
+				onError: function(msg) {
+					console.log("onError:"+msg);
+				},
+				onData: function(bytes) {
+					console.log("onData:",bytes);
+					var input = new PeoteBytesInput(bytes);
+					console.log( "data bytes length = " + input.length);
+					while (input.position < input.length)
+					{
+						console.log(input.position + ":" + input.readByte());
+					}
+					//console.log(input.readByte());
+					//console.log(input.readUInt16());
+					//console.log(input.readInt16());
+					//console.log(input.readInt32());
+					//console.log(input.readFloat());
+					//console.log(input.readDouble());
+					//console.log(input.readString());
+
+				}
+			});
+			
+			peoteSocket.connect("192.168.1.81", 23);
+		}
+
+
+	</script>
+</head>
+
+
+
+<body>
+</body>
+</html>
