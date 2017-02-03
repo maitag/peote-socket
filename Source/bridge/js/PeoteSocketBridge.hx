@@ -92,13 +92,16 @@ class PeoteSocketBridge
 					"allowNetworking": "true",
 					"bgcolor": "#000000"
 				};
-				if (proxys.proxyServerSWF != null)
+				if (proxys != null)
 				{
-					params.flashvars += "&proxyserver=" + proxys.proxyServerSWF;
-				}
-				if (proxys.proxyPortSWF != null)
-				{
-					params.flashvars += "&proxyport=" + proxys.proxyPortSWF;
+					if (proxys.proxyServerSWF != null)
+					{
+						params.flashvars += "&proxyserver=" + proxys.proxyServerSWF;
+					}
+					if (proxys.proxyPortSWF != null)
+					{
+						params.flashvars += "&proxyport=" + proxys.proxyPortSWF;
+					}
 				}
 				var myObject = SWFObject.createSWF(attributes, params, id); //SWFObject.embedSWF(
 				myObject.style.position = "absolute";
