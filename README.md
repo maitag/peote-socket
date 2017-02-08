@@ -6,6 +6,12 @@ for multiple targets (cpp, android, html5, flash).
 Inside webbrowser it gives fallback-support (websocket or swf-socket-bridge) and  
 on server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to wrap around raw-tcp.  
 
+####Installation:
+```
+haxelib git https://github.com/maitag/peote-socket
+```
+
+
 ####How To Use:
 ```
 peoteSocket = new PeoteSocket( {
