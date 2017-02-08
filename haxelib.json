@@ -1,0 +1,13 @@
+{
+	"name": "peote-socket",
+	"url": "https://github.com/maitag/peote-socket",
+	"license": "MIT",
+	"tags": ["peote", "socket", "tcp", "networking", "telnet"],
+	"description": "Raw TCP Socket Client Library",
+	"version": "0.7.0",
+	"classPath": "Source/",
+	"releasenote": "",
+	"contributors": ["maitag"],
+	"dependencies": {
+	}
+}
