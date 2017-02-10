@@ -1,4 +1,4 @@
-package de.peote.io;
+package peote.io;
 
 /**
  * ...

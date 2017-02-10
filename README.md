@@ -8,7 +8,7 @@ on server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to 
 
 ####Installation:
 ```
-haxelib git https://github.com/maitag/peote-socket
+haxelib git peote-socket https://github.com/maitag/peote-socket
 ```
 
 

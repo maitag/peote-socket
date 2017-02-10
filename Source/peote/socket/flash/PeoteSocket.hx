@@ -1,4 +1,4 @@
-package de.peote.socket.flash;
+package peote.socket.flash;
 /**
  * @author sylvio sell
  */
@@ -16,7 +16,7 @@ import flash.events.TimerEvent;
 import haxe.io.BytesData;
 import haxe.io.Bytes;
 
-import de.peote.io.PeoteBytesOutput;
+import peote.io.PeoteBytesOutput;
 import bridge.PeoteSocketBridge;
 
 class PeoteSocket 

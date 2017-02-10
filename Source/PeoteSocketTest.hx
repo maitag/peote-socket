@@ -9,9 +9,9 @@ import haxe.io.Bytes;
 import lime.app.Application;
 
 import bridge.PeoteSocketBridge;
-import de.peote.io.PeoteBytesInput;
-import de.peote.io.PeoteBytesOutput;
-import de.peote.socket.PeoteSocket;
+import peote.io.PeoteBytesInput;
+import peote.io.PeoteBytesOutput;
+import peote.socket.PeoteSocket;
 
 class PeoteSocketTest extends Application {
 	

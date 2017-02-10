@@ -12,7 +12,7 @@ import flash.external.ExternalInterface;//o
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
 
-import de.peote.socket.flash.bridge.PeoteSocket;
+import peote.socket.flash.bridge.PeoteSocket;
 
 class PeoteSocketBridge {
 	

@@ -52,11 +52,13 @@ bridge_js_PeoteSocketBridge.loadSWF = function() {
 			window.document.body.appendChild(div);
 			var id = div.id = "PeoteSocketBridge";
 			var params = { "flashvars" : "onloadcallback=bridge.js.PeoteSocketBridge.peoteSocketBridgeAvailable", "menu" : "false", "scale" : "noScale", "allowScriptAccess" : "always", "allowNetworking" : "true", "bgcolor" : "#000000"};
-			if(bridge_js_PeoteSocketBridge.proxys.proxyServerSWF != null) {
-				params.flashvars += "&proxyserver=" + bridge_js_PeoteSocketBridge.proxys.proxyServerSWF;
-			}
-			if(bridge_js_PeoteSocketBridge.proxys.proxyPortSWF != null) {
-				params.flashvars += "&proxyport=" + bridge_js_PeoteSocketBridge.proxys.proxyPortSWF;
+			if(bridge_js_PeoteSocketBridge.proxys != null) {
+				if(bridge_js_PeoteSocketBridge.proxys.proxyServerSWF != null) {
+					params.flashvars += "&proxyserver=" + bridge_js_PeoteSocketBridge.proxys.proxyServerSWF;
+				}
+				if(bridge_js_PeoteSocketBridge.proxys.proxyPortSWF != null) {
+					params.flashvars += "&proxyport=" + bridge_js_PeoteSocketBridge.proxys.proxyPortSWF;
+				}
 			}
 			swfobject.createSWF({ data : "peoteSocketBridge.swf", width : "1", height : "1"},params,id).style.position = "absolute";
 			console.log("try to embed peoteSocketBridge...");
@@ -93,224 +95,6 @@ bridge_js_PeoteSocketBridge.peoteSocketBridgeAvailable = $hx_exports["bridge"]["
 	bridge_js_PeoteSocketBridge.swfBridgeReady = true;
 	console.log("swf-bridge is READY");
 	bridge_js_PeoteSocketBridge.onload();
-};
-var de_peote_io_PeoteBytesInput = $hx_exports["PeoteBytesInput"] = function(bytes) {
-	if(bytes != null) {
-		this.bytesInput = new haxe_io_BytesInput(bytes);
-	} else {
-		this.bytesInput = new haxe_io_BytesInput(new haxe_io_Bytes(new ArrayBuffer(0)));
-	}
-};
-de_peote_io_PeoteBytesInput.__name__ = true;
-de_peote_io_PeoteBytesInput.main = function() {
-};
-de_peote_io_PeoteBytesInput.prototype = {
-	bytesLeft: function() {
-		return this.bytesInput.totlen - this.bytesInput.pos;
-	}
-	,append: function(b,max_pos_before_trim) {
-		if(max_pos_before_trim == null) {
-			max_pos_before_trim = 0;
-		}
-		var bytes = new haxe_io_Bytes(new ArrayBuffer(this.bytesInput.totlen - this.bytesInput.pos + b.length));
-		if(this.bytesInput.totlen - this.bytesInput.pos > 0) {
-			bytes.blit(0,this.bytesInput.readAll(),0,this.bytesInput.totlen - this.bytesInput.pos);
-		}
-		bytes.blit(this.bytesInput.totlen - this.bytesInput.pos,b,0,b.length);
-		this.bytesInput = new haxe_io_BytesInput(bytes);
-	}
-	,get_length: function() {
-		return this.bytesInput.totlen;
-	}
-	,get_position: function() {
-		return this.bytesInput.pos;
-	}
-	,set_position: function(p) {
-		return this.bytesInput.set_position(p);
-	}
-	,readByte: function() {
-		return this.bytesInput.readByte();
-	}
-	,readUInt16: function() {
-		return this.bytesInput.readUInt16();
-	}
-	,readInt16: function() {
-		return this.bytesInput.readInt16();
-	}
-	,readInt32: function() {
-		return this.bytesInput.readInt32();
-	}
-	,readFloat: function() {
-		return this.bytesInput.readFloat();
-	}
-	,readDouble: function() {
-		return this.bytesInput.readDouble();
-	}
-	,readString: function() {
-		var len = this.bytesInput.readUInt16();
-		return this.bytesInput.readString(len);
-	}
-	,__class__: de_peote_io_PeoteBytesInput
-};
-var haxe_io_Output = function() { };
-haxe_io_Output.__name__ = true;
-haxe_io_Output.prototype = {
-	writeByte: function(c) {
-		throw new js__$Boot_HaxeError("Not implemented");
-	}
-	,writeBytes: function(s,pos,len) {
-		if(pos < 0 || len < 0 || pos + len > s.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		var b = s.b;
-		var k = len;
-		while(k > 0) {
-			this.writeByte(b[pos]);
-			++pos;
-			--k;
-		}
-		return len;
-	}
-	,writeFullBytes: function(s,pos,len) {
-		while(len > 0) {
-			var k = this.writeBytes(s,pos,len);
-			pos += k;
-			len -= k;
-		}
-	}
-	,writeUInt16: function(x) {
-		if(x < 0 || x >= 65536) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.Overflow);
-		}
-		if(this.bigEndian) {
-			this.writeByte(x >> 8);
-			this.writeByte(x & 255);
-		} else {
-			this.writeByte(x & 255);
-			this.writeByte(x >> 8);
-		}
-	}
-	,writeString: function(s) {
-		var b = haxe_io_Bytes.ofString(s);
-		this.writeFullBytes(b,0,b.length);
-	}
-	,__class__: haxe_io_Output
-};
-var haxe_io_BytesOutput = function() {
-	this.b = new haxe_io_BytesBuffer();
-};
-haxe_io_BytesOutput.__name__ = true;
-haxe_io_BytesOutput.__super__ = haxe_io_Output;
-haxe_io_BytesOutput.prototype = $extend(haxe_io_Output.prototype,{
-	writeByte: function(c) {
-		this.b.b.push(c);
-	}
-	,writeBytes: function(buf,pos,len) {
-		var _this = this.b;
-		if(pos < 0 || len < 0 || pos + len > buf.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		var b2 = buf.b;
-		var _g1 = pos;
-		var _g = pos + len;
-		while(_g1 < _g) _this.b.push(b2[_g1++]);
-		return len;
-	}
-	,getBytes: function() {
-		return this.b.getBytes();
-	}
-	,__class__: haxe_io_BytesOutput
-});
-var de_peote_io_PeoteBytesOutput = $hx_exports["PeoteBytesOutput"] = function() {
-	haxe_io_BytesOutput.call(this);
-};
-de_peote_io_PeoteBytesOutput.__name__ = true;
-de_peote_io_PeoteBytesOutput.main = function() {
-};
-de_peote_io_PeoteBytesOutput.__super__ = haxe_io_BytesOutput;
-de_peote_io_PeoteBytesOutput.prototype = $extend(haxe_io_BytesOutput.prototype,{
-	writeString: function(s) {
-		this.writeUInt16(haxe_io_Bytes.ofString(s).length);
-		haxe_io_BytesOutput.prototype.writeString.call(this,s);
-	}
-	,__class__: de_peote_io_PeoteBytesOutput
-});
-var de_peote_socket_PeoteSocketTool = $hx_exports["PeoteSocketTool"] = function() { };
-de_peote_socket_PeoteSocketTool.__name__ = true;
-de_peote_socket_PeoteSocketTool.toBytes = function(arr) {
-	return haxe_io_Bytes.ofData(new Uint8Array(arr).buffer);
-};
-de_peote_socket_PeoteSocketTool.fromBytes = function(bytes) {
-	var _g = [];
-	var _g2 = 0;
-	var _g1 = bytes.length;
-	while(_g2 < _g1) _g.push(bytes.b[_g2++]);
-	return _g;
-};
-var de_peote_socket_PeoteSocket = $hx_exports["PeoteSocket"] = function(callbacks) {
-	this.is_proxy = false;
-	console.log("new PeoteWebSocket (" + Std.string(callbacks) + ")");
-	this.cb = callbacks;
-};
-de_peote_socket_PeoteSocket.__name__ = true;
-de_peote_socket_PeoteSocket.main = function() {
-};
-de_peote_socket_PeoteSocket.prototype = {
-	connect: function(server,port) {
-		var _server = server;
-		var _port = port;
-		if(bridge_js_PeoteSocketBridge.proxys != null) {
-			if(bridge_js_PeoteSocketBridge.proxys.proxyServerWS != null) {
-				_server = bridge_js_PeoteSocketBridge.proxys.proxyServerWS;
-			}
-			if(bridge_js_PeoteSocketBridge.proxys.proxyPortWS != null) {
-				_port = bridge_js_PeoteSocketBridge.proxys.proxyPortWS;
-			}
-		}
-		this.ws = new WebSocket("ws://" + _server + ":" + _port);
-		this.ws.binaryType = "arraybuffer";
-		this.ws.onopen = $bind(this,this.onOpen);
-		this.ws.onclose = $bind(this,this.onClose);
-		this.ws.onerror = $bind(this,this.onError);
-		this.ws.onmessage = $bind(this,this.onMessage);
-		if(_server != server || _port != port) {
-			this.is_proxy = true;
-			this.forward_server = server;
-			this.forward_port = port;
-		}
-	}
-	,close: function() {
-		this.ws.close();
-	}
-	,writeByte: function(b) {
-		this.ws.send(new Uint8Array([b]),{ binary : true, mask : false});
-	}
-	,writeBytes: function(data) {
-		this.ws.send(new Uint8Array(data.b.bufferValue),{ binary : true, mask : false});
-	}
-	,flush: function() {
-	}
-	,onOpen: function() {
-		if(this.is_proxy) {
-			var output = new de_peote_io_PeoteBytesOutput();
-			output.writeString(this.forward_server);
-			output.writeUInt16(this.forward_port);
-			this.writeBytes(output.getBytes());
-		}
-		this.cb.onConnect(true,"connect");
-	}
-	,onClose: function() {
-		this.cb.onClose("closed");
-	}
-	,onError: function(s) {
-		this.cb.onError(s);
-	}
-	,onMessage: function(e) {
-		var tmp = this.cb;
-		var tmp1 = haxe_io_Bytes.ofData(e.data);
-		tmp.onData(tmp1);
-	}
-	,__class__: de_peote_socket_PeoteSocket
 };
 var haxe_Timer = function(time_ms) {
 	var me = this;
@@ -594,6 +378,75 @@ haxe_io_BytesInput.prototype = $extend(haxe_io_Input.prototype,{
 		return len;
 	}
 	,__class__: haxe_io_BytesInput
+});
+var haxe_io_Output = function() { };
+haxe_io_Output.__name__ = true;
+haxe_io_Output.prototype = {
+	writeByte: function(c) {
+		throw new js__$Boot_HaxeError("Not implemented");
+	}
+	,writeBytes: function(s,pos,len) {
+		if(pos < 0 || len < 0 || pos + len > s.length) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		}
+		var b = s.b;
+		var k = len;
+		while(k > 0) {
+			this.writeByte(b[pos]);
+			++pos;
+			--k;
+		}
+		return len;
+	}
+	,writeFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.writeBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+	}
+	,writeUInt16: function(x) {
+		if(x < 0 || x >= 65536) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.Overflow);
+		}
+		if(this.bigEndian) {
+			this.writeByte(x >> 8);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8);
+		}
+	}
+	,writeString: function(s) {
+		var b = haxe_io_Bytes.ofString(s);
+		this.writeFullBytes(b,0,b.length);
+	}
+	,__class__: haxe_io_Output
+};
+var haxe_io_BytesOutput = function() {
+	this.b = new haxe_io_BytesBuffer();
+};
+haxe_io_BytesOutput.__name__ = true;
+haxe_io_BytesOutput.__super__ = haxe_io_Output;
+haxe_io_BytesOutput.prototype = $extend(haxe_io_Output.prototype,{
+	writeByte: function(c) {
+		this.b.b.push(c);
+	}
+	,writeBytes: function(buf,pos,len) {
+		var _this = this.b;
+		if(pos < 0 || len < 0 || pos + len > buf.length) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		}
+		var b2 = buf.b;
+		var _g1 = pos;
+		var _g = pos + len;
+		while(_g1 < _g) _this.b.push(b2[_g1++]);
+		return len;
+	}
+	,getBytes: function() {
+		return this.b.getBytes();
+	}
+	,__class__: haxe_io_BytesOutput
 });
 var haxe_io_Eof = function() {
 };
@@ -941,6 +794,155 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
+var peote_io_PeoteBytesInput = $hx_exports["PeoteBytesInput"] = function(bytes) {
+	if(bytes != null) {
+		this.bytesInput = new haxe_io_BytesInput(bytes);
+	} else {
+		this.bytesInput = new haxe_io_BytesInput(new haxe_io_Bytes(new ArrayBuffer(0)));
+	}
+};
+peote_io_PeoteBytesInput.__name__ = true;
+peote_io_PeoteBytesInput.main = function() {
+};
+peote_io_PeoteBytesInput.prototype = {
+	bytesLeft: function() {
+		return this.bytesInput.totlen - this.bytesInput.pos;
+	}
+	,append: function(b,max_pos_before_trim) {
+		if(max_pos_before_trim == null) {
+			max_pos_before_trim = 0;
+		}
+		var bytes = new haxe_io_Bytes(new ArrayBuffer(this.bytesInput.totlen - this.bytesInput.pos + b.length));
+		if(this.bytesInput.totlen - this.bytesInput.pos > 0) {
+			bytes.blit(0,this.bytesInput.readAll(),0,this.bytesInput.totlen - this.bytesInput.pos);
+		}
+		bytes.blit(this.bytesInput.totlen - this.bytesInput.pos,b,0,b.length);
+		this.bytesInput = new haxe_io_BytesInput(bytes);
+	}
+	,get_length: function() {
+		return this.bytesInput.totlen;
+	}
+	,get_position: function() {
+		return this.bytesInput.pos;
+	}
+	,set_position: function(p) {
+		return this.bytesInput.set_position(p);
+	}
+	,readByte: function() {
+		return this.bytesInput.readByte();
+	}
+	,readUInt16: function() {
+		return this.bytesInput.readUInt16();
+	}
+	,readInt16: function() {
+		return this.bytesInput.readInt16();
+	}
+	,readInt32: function() {
+		return this.bytesInput.readInt32();
+	}
+	,readFloat: function() {
+		return this.bytesInput.readFloat();
+	}
+	,readDouble: function() {
+		return this.bytesInput.readDouble();
+	}
+	,readString: function() {
+		var len = this.bytesInput.readUInt16();
+		return this.bytesInput.readString(len);
+	}
+	,__class__: peote_io_PeoteBytesInput
+};
+var peote_io_PeoteBytesOutput = $hx_exports["PeoteBytesOutput"] = function() {
+	haxe_io_BytesOutput.call(this);
+};
+peote_io_PeoteBytesOutput.__name__ = true;
+peote_io_PeoteBytesOutput.main = function() {
+};
+peote_io_PeoteBytesOutput.__super__ = haxe_io_BytesOutput;
+peote_io_PeoteBytesOutput.prototype = $extend(haxe_io_BytesOutput.prototype,{
+	writeString: function(s) {
+		this.writeUInt16(haxe_io_Bytes.ofString(s).length);
+		haxe_io_BytesOutput.prototype.writeString.call(this,s);
+	}
+	,__class__: peote_io_PeoteBytesOutput
+});
+var peote_socket_PeoteSocketTool = $hx_exports["PeoteSocketTool"] = function() { };
+peote_socket_PeoteSocketTool.__name__ = true;
+peote_socket_PeoteSocketTool.toBytes = function(arr) {
+	return haxe_io_Bytes.ofData(new Uint8Array(arr).buffer);
+};
+peote_socket_PeoteSocketTool.fromBytes = function(bytes) {
+	var _g = [];
+	var _g2 = 0;
+	var _g1 = bytes.length;
+	while(_g2 < _g1) _g.push(bytes.b[_g2++]);
+	return _g;
+};
+var peote_socket_PeoteSocket = $hx_exports["PeoteSocket"] = function(callbacks) {
+	this.is_proxy = false;
+	console.log("new PeoteWebSocket (" + Std.string(callbacks) + ")");
+	this.cb = callbacks;
+};
+peote_socket_PeoteSocket.__name__ = true;
+peote_socket_PeoteSocket.main = function() {
+};
+peote_socket_PeoteSocket.prototype = {
+	connect: function(server,port) {
+		var _server = server;
+		var _port = port;
+		if(bridge_js_PeoteSocketBridge.proxys != null) {
+			if(bridge_js_PeoteSocketBridge.proxys.proxyServerWS != null) {
+				_server = bridge_js_PeoteSocketBridge.proxys.proxyServerWS;
+			}
+			if(bridge_js_PeoteSocketBridge.proxys.proxyPortWS != null) {
+				_port = bridge_js_PeoteSocketBridge.proxys.proxyPortWS;
+			}
+		}
+		this.ws = new WebSocket("ws://" + _server + ":" + _port);
+		this.ws.binaryType = "arraybuffer";
+		this.ws.onopen = $bind(this,this.onOpen);
+		this.ws.onclose = $bind(this,this.onClose);
+		this.ws.onerror = $bind(this,this.onError);
+		this.ws.onmessage = $bind(this,this.onMessage);
+		if(_server != server || _port != port) {
+			this.is_proxy = true;
+			this.forward_server = server;
+			this.forward_port = port;
+		}
+	}
+	,close: function() {
+		this.ws.close();
+	}
+	,writeByte: function(b) {
+		this.ws.send(new Uint8Array([b]),{ binary : true, mask : false});
+	}
+	,writeBytes: function(data) {
+		this.ws.send(new Uint8Array(data.b.bufferValue),{ binary : true, mask : false});
+	}
+	,flush: function() {
+	}
+	,onOpen: function() {
+		if(this.is_proxy) {
+			var output = new peote_io_PeoteBytesOutput();
+			output.writeString(this.forward_server);
+			output.writeUInt16(this.forward_port);
+			this.writeBytes(output.getBytes());
+		}
+		this.cb.onConnect(true,"connect");
+	}
+	,onClose: function() {
+		this.cb.onClose("closed");
+	}
+	,onError: function(s) {
+		this.cb.onError(s);
+	}
+	,onMessage: function(e) {
+		var tmp = this.cb;
+		var tmp1 = haxe_io_Bytes.ofData(e.data);
+		tmp.onData(tmp1);
+	}
+	,__class__: peote_socket_PeoteSocket
+};
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 String.prototype.__class__ = String;
@@ -954,17 +956,17 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
-Object.defineProperty(de_peote_io_PeoteBytesInput.prototype,"length",{ get : de_peote_io_PeoteBytesInput.prototype.get_length});
-Object.defineProperty(de_peote_io_PeoteBytesInput.prototype,"position",{ get : de_peote_io_PeoteBytesInput.prototype.get_position, set : de_peote_io_PeoteBytesInput.prototype.set_position});
 var ArrayBuffer = $global.ArrayBuffer || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) {
 	ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 }
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
+Object.defineProperty(peote_io_PeoteBytesInput.prototype,"length",{ get : peote_io_PeoteBytesInput.prototype.get_length});
+Object.defineProperty(peote_io_PeoteBytesInput.prototype,"position",{ get : peote_io_PeoteBytesInput.prototype.get_position, set : peote_io_PeoteBytesInput.prototype.set_position});
 bridge_js_PeoteSocketBridge.checkedSWF = false;
 bridge_js_PeoteSocketBridge.checkedWS = false;
 bridge_js_PeoteSocketBridge.swfBridgeReady = false;
 js_Boot.__toStr = ({ }).toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-de_peote_socket_PeoteSocket.main();
+peote_socket_PeoteSocket.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

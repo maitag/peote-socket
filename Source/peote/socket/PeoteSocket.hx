@@ -1,15 +1,16 @@
-package de.peote.socket;
+package peote.socket;
+
 /**
  * /\/\/\  ~^
  * @author Sylvio Sell - maitag
 **/
 
 #if cpp
-	typedef PeoteSocket = de.peote.socket.cpp.PeoteSocket;
+	typedef PeoteSocket = peote.socket.cpp.PeoteSocket;
 #end
 
 #if flash
-	typedef PeoteSocket = de.peote.socket.flash.PeoteSocket;
+	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
 #end
 
 
@@ -23,8 +24,8 @@ import js.html.BinaryType;
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
 import bridge.js.PeoteSocketBridge;
-import de.peote.io.PeoteBytesOutput;
-import de.peote.io.PeoteBytesInput;
+import peote.io.PeoteBytesOutput;
+import peote.io.PeoteBytesInput;
 
 typedef Callbacks = {
 	onConnect:Bool -> String -> Void,

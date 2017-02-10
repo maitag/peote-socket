@@ -5,10 +5,10 @@ import lime.app.Application;
 
 import bridge.PeoteSocketBridge;
 
-import de.peote.socket.PeoteSocket;
-import de.peote.telnet.PeoteTelnet;
-import de.peote.io.PeoteBytesInput;
-import de.peote.io.PeoteBytesOutput;
+import peote.socket.PeoteSocket;
+import peote.telnet.PeoteTelnet;
+import peote.io.PeoteBytesInput;
+import peote.io.PeoteBytesOutput;
 
 class PeoteTelnetTest extends Application {
 	
@@ -23,7 +23,7 @@ class PeoteTelnetTest extends Application {
 		// webbrowser falls back to swfbridge or websockets (trying both)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			prefareWebsockets: true,  // only for js
+			//prefareWebsockets: true,  // only for js
 			proxys: {
 				proxyServerWS:"localhost",  // only for js
 				proxyPortWS  : 3211,

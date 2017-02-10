@@ -1,4 +1,4 @@
-package de.peote.socket.cpp;
+package peote.socket.cpp;
 
 /**
  * @author sylvio sell

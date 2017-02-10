@@ -1,4 +1,4 @@
-package de.peote.telnet;
+package peote.telnet;
 
 /**
  * ported old as3 code from 2008
@@ -8,8 +8,8 @@ package de.peote.telnet;
 
 import haxe.io.Bytes;
 
-import de.peote.socket.PeoteSocket;
-import de.peote.io.PeoteBytesInput;
+import peote.socket.PeoteSocket;
+import peote.io.PeoteBytesInput;
 
 class PeoteTelnet
 {
