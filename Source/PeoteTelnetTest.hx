@@ -3,7 +3,7 @@ package;
 import haxe.io.Bytes;
 import lime.app.Application;
 
-import bridge.PeoteSocketBridge;
+import peote.bridge.PeoteSocketBridge;
 
 import peote.socket.PeoteSocket;
 import peote.telnet.PeoteTelnet;

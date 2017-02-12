@@ -1,14 +1,15 @@
-package peote.socket.flash.bridge;
+package peote.bridge.flash;
 /**
  * ~~~~~~~~~~~~~~~~~~~<o<~~~~~~
  * @author Sylvio Sell - maitag
  */
 
-import peote.socket.flash.PeoteSocket;
 import flash.external.ExternalInterface;
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+
+import peote.socket.flash.PeoteSocket;
 
 class PeoteSocket extends peote.socket.flash.PeoteSocket
 {

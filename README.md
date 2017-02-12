@@ -31,9 +31,15 @@ peoteSocket = new PeoteSocket( {
 peoteSocket.connect("mud.tubmud.de", 7680);
 ```
   
-  
-For html5 or flash-targets you can set proxy-address before creating new PeoteSocket  
-( for cpp this will be ignored and calls onload-callback directly ):  
+
+####Fallback and proxys for html5:
+
+To get swf/websocket fallback support for html5-targets, please look first into "buildSocketBridgeSWF.bat" file  
+how to build the dependence file: "peoteSocketBridge.swf".  
+
+For html5 or flash-targets you can set proxy-address before creating new PeoteSocket,  
+cpp-targets will ignore this and calls onload-callback directly.  
+
 ```
 PeoteSocketBridge.load( {
 	onload: openSocket,       // callback if swfbridges is loaded or websockets available
@@ -55,6 +61,13 @@ function openSocket() {
 }
 
 ```
+
+
+####Use as Javascript Library:
+
+To use with clientsided javascript please look into "build-js-lib.bat" file how to  
+build the "PeoteSocket.js" library for a running sample inside the "js-lib" folder.  
+
 
 ####TODO:
 - better error-handling

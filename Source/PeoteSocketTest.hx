@@ -8,7 +8,7 @@ package;
 import haxe.io.Bytes;
 import lime.app.Application;
 
-import bridge.PeoteSocketBridge;
+import peote.bridge.PeoteSocketBridge;
 import peote.io.PeoteBytesInput;
 import peote.io.PeoteBytesOutput;
 import peote.socket.PeoteSocket;

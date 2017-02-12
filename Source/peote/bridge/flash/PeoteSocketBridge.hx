@@ -1,4 +1,4 @@
-package;
+package peote.bridge.flash;
 /*        o-o     o-o  o-o-o   o-o     
  *       o   o   o        o       o    
  *      o-o-o   o-o        o     o-o   
@@ -11,8 +11,6 @@ package;
 import flash.external.ExternalInterface;//o
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
-
-import peote.socket.flash.bridge.PeoteSocket;
 
 class PeoteSocketBridge {
 	

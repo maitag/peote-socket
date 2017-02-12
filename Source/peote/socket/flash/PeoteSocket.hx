@@ -17,7 +17,7 @@ import haxe.io.BytesData;
 import haxe.io.Bytes;
 
 import peote.io.PeoteBytesOutput;
-import bridge.PeoteSocketBridge;
+import peote.bridge.PeoteSocketBridge;
 
 class PeoteSocket 
 {

@@ -23,7 +23,7 @@ import js.html.WebSocket;
 import js.html.BinaryType;
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
-import bridge.js.PeoteSocketBridge;
+import peote.bridge.js.PeoteSocketBridge;
 import peote.io.PeoteBytesOutput;
 import peote.io.PeoteBytesInput;
 

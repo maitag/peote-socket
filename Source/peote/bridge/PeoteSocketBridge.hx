@@ -1,4 +1,5 @@
-package bridge;
+package peote.bridge;
+import peote.bridge.js.PeoteSocketBridge;
 /**
  * ...
  * @author Sylvio Sell
@@ -19,7 +20,7 @@ typedef Param = {
 }
 
 #if js
-typedef PeoteSocketBridge = bridge.js.PeoteSocketBridge;
+typedef PeoteSocketBridge = peote.bridge.js.PeoteSocketBridge;
 #end
 
 #if flash

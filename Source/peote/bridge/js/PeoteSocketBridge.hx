@@ -1,4 +1,4 @@
-package bridge.js;
+package peote.bridge.js;
 /**
  * ...
  * @author Sylvio Sell
@@ -45,17 +45,23 @@ class PeoteSocketBridge
 	
 	
 	static var checkedSWF:Bool = false;
-	static var checkedWS :Bool = false;
+	static var wsCheckedAlready :Bool = false;
 	
 	static var swfBridgeReady:Bool = false;
 	
+	static var isLoaded:Bool = false;
+	
 	public static function load( param:Param ):Void
 	{
-		proxys = param.proxys;
-		onload = param.onload;
-		onfail = param.onfail;
-		
-		if (param.prefareWebsockets) loadWS() else loadSWF();
+		if (isLoaded) {
+			onload(); // already loaded
+		}
+		else {
+			proxys = param.proxys;
+			onload = param.onload;
+			onfail = param.onfail;
+			if (param.prefareWebsockets) loadWS() else loadSWF();
+		}
 	}
 	
 	public static function loadSWF():Void
@@ -85,7 +91,7 @@ class PeoteSocketBridge
 				var attributes = { data:"peoteSocketBridge.swf", width:"1", height:"1" };
 				var params = {
 					//"flashvars": "onloadcallback=PeoteSocketBridge", // <- is default
-					"flashvars": "onloadcallback=bridge.js.PeoteSocketBridge.peoteSocketBridgeAvailable",
+					"flashvars": "onloadcallback=peote.bridge.js.PeoteSocketBridge.peoteSocketBridgeAvailable",
 					"menu": "false",
 					"scale": "noScale",
 					"allowScriptAccess": "always", //"sameDomain" works to
@@ -125,30 +131,38 @@ class PeoteSocketBridge
 		}
 		else
 		{
-			trace("no flashplayer found, using websocket instead");
+			trace("no flashplayer found");
 			loadWS();
 		}
 	}
 	
 	public static function loadWS():Void
 	{
-		if (checkedWS) return;
-		checkedWS = true;
-		
-		trace("check for websocket support");
-		var supported:Bool = untyped __js__("('WebSocket' in window || 'MozWebSocket' in window)");
-		if (supported)
-		{
-			trace("Websockets available");
-			onload();
+		if (wsCheckedAlready) {
+			onfail(); // if checking twice both not available
 		}
-		else loadSWF(); // try SWF-wrapper
+		else {
+			wsCheckedAlready = true;
+		
+			trace("check for websocket support");
+			var supported:Bool = untyped __js__("('WebSocket' in window || 'MozWebSocket' in window)");
+			if (supported) {
+				trace("Websockets available");
+				isLoaded = true;
+				onload();
+			}
+			else {
+				trace("Websockets  not available");
+				loadSWF(); // try SWF-wrapper
+			}
+		}
 	}
 	
 	//@:keep @:expose("PeoteSocketBridge") public static function peoteSocketBridgeAvailable():Void {
 	@:keep @:expose public static function peoteSocketBridgeAvailable():Void {
 		swfBridgeReady = true;
 		trace("swf-bridge is READY");
+		isLoaded = true;
 		onload();
 	}
 

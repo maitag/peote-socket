@@ -1,4 +1,4 @@
--main PeoteSocketBridge
+-main peote.bridge.flash.PeoteSocketBridge
 -cp Source
 -dce full
 -swf-version 11.2
