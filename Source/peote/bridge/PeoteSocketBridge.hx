@@ -15,7 +15,7 @@ typedef Proxys = {
 typedef Param = {
 	onload:Void->Void,
 	?onfail:Void->Void,
-	?prefareWebsockets:Bool,
+	?prefereWebsockets:Bool,
 	?proxys:Proxys
 }
 

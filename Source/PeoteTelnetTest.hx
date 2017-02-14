@@ -23,7 +23,7 @@ class PeoteTelnetTest extends Application {
 		// webbrowser falls back to swfbridge or websockets (trying both)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			//prefareWebsockets: true,  // only for js
+			//prefereWebsockets: true,  // only for js
 			proxys: {
 				proxyServerWS:"localhost",  // only for js
 				proxyPortWS  : 3211,

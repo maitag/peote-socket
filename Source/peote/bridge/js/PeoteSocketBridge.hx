@@ -25,7 +25,7 @@ typedef Proxys = {
 typedef Param = {
 	onload:Void->Void,
 	?onfail:Void->Void,
-	?prefareWebsockets:Bool,
+	?prefereWebsockets:Bool,
 	?proxys:Proxys
 }
 
@@ -60,7 +60,7 @@ class PeoteSocketBridge
 			proxys = param.proxys;
 			onload = param.onload;
 			onfail = param.onfail;
-			if (param.prefareWebsockets) loadWS() else loadSWF();
+			if (param.prefereWebsockets) loadWS() else loadSWF();
 		}
 	}
 	

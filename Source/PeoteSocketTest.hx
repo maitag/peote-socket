@@ -25,7 +25,7 @@ class PeoteSocketTest extends Application {
 		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			//prefareWebsockets: true,
+			//prefereWebsockets: true,
 			proxys: {
 				proxyServerWS:"localhost",  // js websockets
 				//proxyServerWS:"192.168.1.81",
