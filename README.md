@@ -43,7 +43,7 @@ cpp-targets will ignore this and calls onload-callback directly.
 ```
 PeoteSocketBridge.load( {
 	onload: openSocket,       // callback if swfbridges is loaded or websockets available
-	prefareWebsockets: true,  // trying websockets first and fallback to flash
+	preferWebsockets: true,  // trying websockets first and fallback to flash
 	proxys: {
 		proxyServerWS:"localhost",  // proxy for websocket
 		proxyPortWS  : 3211,
