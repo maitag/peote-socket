@@ -18,11 +18,9 @@
 			//prefereWebsockets: true,
 			proxys: {
 				proxyServerWS:"localhost",  // js websockets
-				//proxyServerWS:"192.168.1.81",
 				proxyPortWS  : 3211,
 				
 				proxyServerSWF:"localhost", // js throught peoteSocketBridge.swf
-				//proxyServerSWF:"192.168.1.81",
 				proxyPortSWF  :3211,
 			},
 			onfail: function() { trace("Browser doesn't support flash- or websockets"); }
@@ -72,7 +70,7 @@
 				}
 			});
 			
-			peoteSocket.connect("192.168.1.81", 23);
+			peoteSocket.connect("lem", 23);
 		}
 
 

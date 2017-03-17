@@ -25,7 +25,7 @@ class PeoteSocketTest extends Application {
 		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			//preferWebsockets: true,
+			preferWebsockets: true,
 			proxys: {
 				proxyServerWS:"localhost",  // js websockets
 				//proxyServerWS:"192.168.1.81",
@@ -54,10 +54,10 @@ class PeoteSocketTest extends Application {
 				},
 				onData: onData
 		});
-		peoteSocket.connect("192.168.1.81", 23);
+		//peoteSocket.connect("192.168.1.81", 23);
 		//peoteSocket.connect("127.0.0.1", 7685);
 		//peoteSocket.connect("mud.tubmud.de", 7680);
-		//peoteSocket.connect("lem", 23);
+		peoteSocket.connect("lem", 23);
 	}
 	
 	public inline function sendTestData():Void

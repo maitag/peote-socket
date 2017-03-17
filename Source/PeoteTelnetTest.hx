@@ -50,7 +50,7 @@ class PeoteTelnetTest extends Application {
 				onData: onData
 		});
 		peoteTelnet = new PeoteTelnet(peoteSocket);
-		peoteSocket.connect("192.168.1.81", 23); // be sure there is running telnet server
+		peoteSocket.connect("lem", 23); // be sure there is running telnet server
 		
 	}
 	
