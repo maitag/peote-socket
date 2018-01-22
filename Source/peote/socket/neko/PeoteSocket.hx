@@ -1,4 +1,4 @@
-package peote.socket.cpp;
+package peote.socket.neko;
 
 /**
  * @author sylvio sell
@@ -10,6 +10,7 @@ import haxe.Timer;
 
 import sys.net.Socket;
 import sys.net.Host;
+
 
 typedef Callbacks = {
 	onConnect:Bool -> String -> Void,
@@ -37,7 +38,7 @@ class PeoteSocket
 		_timer.stop();
 		if (stopReading) return; // on socket close
 		
-		var end:Bool = false;		
+		var end:Bool = false;
 		var bytesOutput:BytesOutput = new BytesOutput();
 		
 		while (!end) {
@@ -47,12 +48,12 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				end = true;
-				if (Std.string(unknown) != "Blocked") cb.onError("Unknown exception : "+Std.string(unknown));
+				if (Std.string(unknown) != "Blocked") cb.onError("Unknown exception : " + Std.string(unknown));
 			}
 		}
-
-		if (bytesOutput.length>0) cb.onData(bytesOutput.getBytes());
 		
+		if (bytesOutput.length>0) cb.onData(bytesOutput.getBytes());
+			
 		// start timer again
 		_timer = new Timer(60);
 		_timer.run = readFromSocket;
@@ -64,7 +65,6 @@ class PeoteSocket
 		_socket.setTimeout(3);
 		_socket.setBlocking(false);
 		_socket.setFastSend(true);
-		
 		try {
 			_socket.connect(new Host(server), port);
 		}
@@ -102,8 +102,8 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				cb.onError("writeByte(b) exception: "+Std.string(unknown)+" end:"+end);
-				//end = true; // TODO -> on fail !
+				if (Std.string(unknown) != "Custom(std@socket_send)") cb.onError("writeByte(b) exception: " + Std.string(unknown) + " end:" + end);
+				// Try AGAIN on fail !
 			}
 		}
 	}
@@ -119,8 +119,8 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true; // TODO -> on fail !
+				if (Std.string(unknown) != "Custom(std@socket_send)") cb.onError("writeBytes(ba) exception: " + Std.string(unknown));
+				// Try AGAIN on fail !
 			}
 		}
 	}
@@ -137,7 +137,7 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true; // TODO -> Try AGAIN on fail !
+				// Try AGAIN on fail !
 			}
 		}
 	}

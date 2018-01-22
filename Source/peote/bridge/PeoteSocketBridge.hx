@@ -35,7 +35,7 @@ class PeoteSocketBridge
 }
 #end
 
-#if cpp
+#if (cpp || neko)
 class PeoteSocketBridge
 {
 	public static function load( param:Param ):Void

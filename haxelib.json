@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["peote", "socket", "tcp", "networking", "telnet"],
 	"description": "Raw TCP Socket Client Library",
-	"version": "0.7.1",
+	"version": "0.7.2",
 	"classPath": "Source/",
 	"releasenote": "",
 	"contributors": ["maitag"],

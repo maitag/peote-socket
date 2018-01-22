@@ -7,9 +7,9 @@ package peote.socket;
 
 #if cpp
 	typedef PeoteSocket = peote.socket.cpp.PeoteSocket;
-#end
-
-#if flash
+#elseif neko
+	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
+#elseif flash
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
 #end
 

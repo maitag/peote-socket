@@ -4,25 +4,24 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="PeoteTelnetTest.lime" />
+    <movie path="PeoteTelnetTest.xml" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
-    <movie background="FFFFFF" />
+    <movie background="#FFFFFF" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\HaxeToolkit\haxe\lib\lime\3,7,2" />
     <class path="Source" />
-    <class path="Export\html5\release\haxe" />
+    <class path="Export\windows\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=3.7.2&#xA;tools=3.7.2&#xA;howlerjs&#xA;no-compilation&#xA;lime-html5&#xA;source-map-content&#xA;debugtelnet&#xA;html5&#xA;web&#xA;html5&#xA;html&#xA;display" />
+    <option directives="lime=6.0.1&#xA;tools=6.0.1&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;lime-vorbis&#xA;lime-cffi&#xA;debugtelnet&#xA;windows&#xA;desktop&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
