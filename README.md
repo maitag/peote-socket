@@ -1,4 +1,4 @@
-### PeoteSocket - Raw TCP Socket Client Library
+# PeoteSocket - Raw TCP Socket Client Library
 
 This Library is written in [Haxe](http://haxe.org) to provide simple Socket-API  
 for multiple targets (cpp, neko, android, html5, flash). 
@@ -6,13 +6,13 @@ for multiple targets (cpp, neko, android, html5, flash).
 Inside webbrowser it gives fallback-support (websocket or swf-socket-bridge) and  
 on server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to wrap around raw-tcp.  
 
-####Installation:
+## Installation:
 ```
 haxelib git peote-socket https://github.com/maitag/peote-socket
 ```
 
 
-####How To Use:
+## How To Use:
 ```
 peoteSocket = new PeoteSocket( {
 	onConnect: function(connected, msg) {
@@ -32,7 +32,7 @@ peoteSocket.connect("mud.tubmud.de", 7680);
 ```
   
 
-####Fallback and proxys for html5:
+## Fallback and proxys for html5:
 
 To get swf/websocket fallback support for html5-targets, please look first into "buildSocketBridgeSWF.bat" file  
 how to build the dependence file: "peoteSocketBridge.swf".  
@@ -63,13 +63,13 @@ function openSocket() {
 ```
 
 
-####Use as Javascript Library:
+## Use as Javascript Library:
 
 To use with clientsided javascript please look into "build-js-lib.bat" file how to  
 build the "PeoteSocket.js" library for a running sample inside the "js-lib" folder.  
 
 
-####TODO:
+## TODO:
 - better error-handling
 - more tests scripts for peote-proxy
 - updating telnet/mud-client
