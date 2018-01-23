@@ -1,17 +1,16 @@
 package peote.socket.flash;
+
 /**
  * @author sylvio sell
  */
 
 import flash.net.Socket;
-import flash.events.EventDispatcher;
 import flash.events.Event;
 import flash.events.ErrorEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 import flash.utils.Timer;
-import flash.events.TimerEvent;
 
 import haxe.io.BytesData;
 import haxe.io.Bytes;

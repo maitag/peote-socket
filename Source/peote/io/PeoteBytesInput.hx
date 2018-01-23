@@ -1,12 +1,12 @@
 package peote.io;
 
-/**
- * ...
- * @author Sylvio Sell
- */
-
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
+
+/**
+ * by Sylvio Sell - Rostock 2015
+ * 
+ */
 
 #if expose_js
 @:keep

@@ -13,17 +13,15 @@ package peote.socket;
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
 
 #elseif js
-// ------------------------- ----------------------------------
+
 // wrapper around external Interface of flash socketbridge------
 
 import haxe.io.Bytes;
 import js.html.WebSocket;
 import js.html.BinaryType;
-import js.html.ArrayBuffer;
 import js.html.Uint8Array;
 import peote.bridge.js.PeoteSocketBridge;
 import peote.io.PeoteBytesOutput;
-import peote.io.PeoteBytesInput;
 
 typedef Callbacks = {
 	onConnect:Bool -> String -> Void,
@@ -75,10 +73,9 @@ typedef Callbacks = {
 	
 	public function new (callbacks:Callbacks)
 	{
-		//trace('new PeoteWebSocket ($callbacks)');
-		this.cb = callbacks;
-		
+		this.cb = callbacks;		
 	}
+	
 	public function connect(server:String, port:Int):Void
 	{
 		var _server:String = server;
@@ -154,30 +151,27 @@ typedef Callbacks = {
 		}
 
 		cb.onConnect(true,"connect");
-	};
+	}
 	
 	function onClose()
 	{
-		//trace("onClose");
 		cb.onClose("closed");
-	};
+	}
 	
 	function onError(s:String)
 	{
-		//trace("onError");
 		cb.onError(s);
-	};	
+	}
 
-	function onMessage(e:Dynamic) //BytesData
+	function onMessage(e:Dynamic) // BytesData
 	{
 		//trace("onMessage - " + e.data + " - number of bytes comming in: " + e.data.byteLength);
 		//var ab:ArrayBuffer = e.data;
 		//var a:Array<Int> = cast new Uint8Array(ab, 0, ab.byteLength);
 		
 		//cb.onData( cast new Uint8Array(e.data, 0, e.data.byteLength) );
-		cb.onData( Bytes.ofData(e.data) );
-		
-	};
+		cb.onData( Bytes.ofData(e.data) );		
+	}
 	
 }
 

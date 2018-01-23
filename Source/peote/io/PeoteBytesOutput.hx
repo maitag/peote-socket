@@ -1,9 +1,10 @@
 package peote.io;
 
 /**
- * ...
- * @author Sylvio Sell
+ * by Sylvio Sell - Rostock 2015
+ * 
  */
+
 #if expose_js
 @:keep
 @:expose("PeoteBytesOutput")

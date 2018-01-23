@@ -1,29 +1,15 @@
 package peote.bridge;
-import peote.bridge.js.PeoteSocketBridge;
+
 /**
- * ...
- * @author Sylvio Sell
+ * by Sylvio Sell - Rostock 2015
+ * 
  */
 
-typedef Proxys = {
-	?proxyServerWS:String,
-	?proxyPortWS:Int,
-	
-	?proxyServerSWF:String,
-	?proxyPortSWF:Int
-}
-typedef Param = {
-	onload:Void->Void,
-	?onfail:Void->Void,
-	?preferWebsockets:Bool,
-	?proxys:Proxys
-}
 
 #if js
 typedef PeoteSocketBridge = peote.bridge.js.PeoteSocketBridge;
-#end
 
-#if flash
+#elseif flash
 class PeoteSocketBridge
 {
 	public static var proxys:Proxys;
@@ -33,9 +19,8 @@ class PeoteSocketBridge
 		param.onload();
 	}
 }
-#end
 
-#if (cpp || neko)
+#elseif (cpp || neko)
 class PeoteSocketBridge
 {
 	public static function load( param:Param ):Void
@@ -43,6 +28,7 @@ class PeoteSocketBridge
 		param.onload();
 	}
 }
+
 #end
 
 

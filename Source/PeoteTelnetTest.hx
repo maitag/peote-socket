@@ -28,7 +28,7 @@ class PeoteTelnetTest extends Application {
 		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			//preferWebsockets: true,  // only for js
+			preferWebsockets: true,  // only for js
 			proxys: {
 				proxyServerWS:"localhost",  // for js websocket proxy
 				proxyPortWS  : 3211,
@@ -54,6 +54,7 @@ class PeoteTelnetTest extends Application {
 				},
 				onData: onData
 		});
+		
 		peoteTelnet = new PeoteTelnet(peoteSocket);
 		peoteSocket.connect("lem", 23); // be sure there is running telnet server
 		

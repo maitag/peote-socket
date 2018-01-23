@@ -1,9 +1,8 @@
 package peote.bridge.js;
 /**
- * ...
- * @author Sylvio Sell
+ * by Sylvio Sell - Rostock 2015
+ * 
  */
-
 
 #if js
 
@@ -12,22 +11,8 @@ import haxe.Timer;
 import js.Browser;
 import js.swfobject.SWFObject;
 
-
-typedef Proxys = {
-	?proxyServerWS:String,
-	?proxyPortWS:Int,
-	
-	?proxyServerSWF:String,
-	?proxyPortSWF:Int
-}
-
-
-typedef Param = {
-	onload:Void->Void,
-	?onfail:Void->Void,
-	?preferWebsockets:Bool,
-	?proxys:Proxys
-}
+import peote.bridge.Proxys;
+import peote.bridge.Param;
 
 
 #if expose_js
@@ -36,7 +21,7 @@ typedef Param = {
 #end
 class PeoteSocketBridge
 {
-	#if expose_js static function main() {}#end
+	#if expose_js static function main() {} #end
 
 	public static var proxys:Proxys;
 	
