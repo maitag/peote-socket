@@ -11,10 +11,8 @@ package peote.socket;
 	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
 #elseif flash
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
-#end
 
-
-#if js
+#elseif js
 // ------------------------- ----------------------------------
 // wrapper around external Interface of flash socketbridge------
 
@@ -77,7 +75,7 @@ typedef Callbacks = {
 	
 	public function new (callbacks:Callbacks)
 	{
-		trace('new PeoteWebSocket ($callbacks)');
+		//trace('new PeoteWebSocket ($callbacks)');
 		this.cb = callbacks;
 		
 	}

@@ -1,5 +1,10 @@
 package;
 
+/**
+ * by Sylvio Sell Rostock 2015
+ * 
+ */
+
 import haxe.io.Bytes;
 import lime.app.Application;
 
@@ -8,7 +13,6 @@ import peote.bridge.PeoteSocketBridge;
 import peote.socket.PeoteSocket;
 import peote.telnet.PeoteTelnet;
 import peote.io.PeoteBytesInput;
-import peote.io.PeoteBytesOutput;
 
 class PeoteTelnetTest extends Application {
 	
@@ -19,16 +23,17 @@ class PeoteTelnetTest extends Application {
 	{
 		super();
 		
-		// for js or flash-targets only (cpp will ignore all that proxy-settings and go diretly throught)
-		// webbrowser falls back to swfbridge or websockets (trying both)
+		// provides adresses for peote-proxy server that handles flashpolicy and websockets
+		// only relevant for js or flash targets
+		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
 			//preferWebsockets: true,  // only for js
 			proxys: {
-				proxyServerWS:"localhost",  // only for js
+				proxyServerWS:"localhost",  // for js websocket proxy
 				proxyPortWS  : 3211,
 				
-				proxyServerSWF:"localhost", // js targets going throught peoteSocketBridge.swf
+				proxyServerSWF:"localhost", // for flash proxy
 				proxyPortSWF  :3211,
 			},
 			onfail: function() { trace("Browser doesn't support flash or websockets"); }

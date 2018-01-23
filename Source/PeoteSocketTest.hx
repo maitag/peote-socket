@@ -1,14 +1,15 @@
 package;
-/**
- * ...
- * @author Sylvio Sell
- */
 
+/**
+ * by Sylvio Sell Rostock 2015
+ * 
+ */
 
 import haxe.io.Bytes;
 import lime.app.Application;
 
 import peote.bridge.PeoteSocketBridge;
+
 import peote.io.PeoteBytesInput;
 import peote.io.PeoteBytesOutput;
 import peote.socket.PeoteSocket;
@@ -20,19 +21,18 @@ class PeoteSocketTest extends Application {
 	public function new ()
 	{
 		super();
+		
 		// provides adresses for peote-proxy server that handles flashpolicy and websockets
 		// only relevant for js or flash targets
 		// (cpp will ignore this and opens directly tcp socket immediatly)
 		PeoteSocketBridge.load( {
 			onload: openSocket,
-			preferWebsockets: true,
+			//preferWebsockets: true,  // only for js
 			proxys: {
-				proxyServerWS:"localhost",  // js websockets
-				//proxyServerWS:"192.168.1.81",
+				proxyServerWS:"localhost",  // for js websocket proxy
 				proxyPortWS  : 3211,
 				
-				proxyServerSWF:"localhost", // js throught peoteSocketBridge.swf
-				//proxyServerSWF:"192.168.1.81",
+				proxyServerSWF:"localhost", // for flash proxy
 				proxyPortSWF  :3211,
 			},
 			onfail: function() { trace("Browser doesn't support flash- or websockets"); }
@@ -54,9 +54,6 @@ class PeoteSocketTest extends Application {
 				},
 				onData: onData
 		});
-		//peoteSocket.connect("192.168.1.81", 23);
-		//peoteSocket.connect("127.0.0.1", 7685);
-		//peoteSocket.connect("mud.tubmud.de", 7680);
 		peoteSocket.connect("lem", 23);
 	}
 	

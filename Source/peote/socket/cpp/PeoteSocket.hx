@@ -25,7 +25,7 @@ class PeoteSocket
 	public var _socket:Socket;
 	
 	private var _timer:Timer;
-	private var stopReading:Bool = true;
+	private var stopped:Bool = true;
 	
 	public function new(callbacks:Callbacks)
 	{
@@ -35,7 +35,7 @@ class PeoteSocket
 	public function readFromSocket():Void
 	{	
 		_timer.stop();
-		if (stopReading) return; // on socket close
+		if (stopped) return; // on socket close
 		
 		var end:Bool = false;		
 		var bytesOutput:BytesOutput = new BytesOutput();
@@ -47,7 +47,11 @@ class PeoteSocket
 			catch (unknown : Dynamic)
 			{
 				end = true;
-				if (Std.string(unknown) != "Blocked") cb.onError("Unknown exception : "+Std.string(unknown));
+				if (Std.string(unknown) != "Blocked") {
+					stopped = true;
+					if (Std.string(unknown) == "Eof") cb.onClose(Std.string(unknown));
+					cb.onError("Unknown exception : "+Std.string(unknown));
+				}
 			}
 		}
 
@@ -61,24 +65,25 @@ class PeoteSocket
 	public function connect(server:String, port:Int):Void
 	{
 		_socket = new Socket();
-		_socket.setTimeout(3);
-		_socket.setBlocking(false);
-		_socket.setFastSend(true);
+		_socket.setTimeout(5);
 		
 		try {
 			_socket.connect(new Host(server), port);
 		}
 		catch (unknown : Dynamic)
 		{
-			if (cb.onConnect != null) cb.onConnect(false, "false");
+			if (cb.onConnect != null) cb.onConnect(false, Std.string(unknown));
 			return;
 		}
 		
-		if (cb.onConnect != null) cb.onConnect(true, "true");
+		_socket.setBlocking(false);
+		_socket.setFastSend(true);
+		
+		if (cb.onConnect != null) cb.onConnect(true, Std.string(_socket.peer()));
 		
 		if (cb.onData != null)
 		{
-			stopReading = false;
+			stopped = false;
 			_timer = new Timer(60);
 			_timer.run = readFromSocket;
 		}
@@ -86,13 +91,12 @@ class PeoteSocket
 	
 	public function close():Void
 	{	
-		stopReading = true;
+		stopped = true;
 		_socket.close();
 	}
 	
 	public function writeByte(b:Int):Void
 	{
-		// TODO: check blocking !
 		var end:Bool = false;
 		while (!end) {
 			try {
@@ -102,15 +106,14 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				cb.onError("writeByte(b) exception: "+Std.string(unknown)+" end:"+end);
-				//end = true; // TODO -> on fail !
+				cb.onError("writeByte exception: "+Std.string(unknown));
+				if (stopped) return; // on socket close
 			}
 		}
 	}
 	
 	public function writeBytes(bytes:Bytes):Void
 	{	
-		// TODO: check blocking !
 		var end:Bool = false;
 		while (!end) {
 			try {
@@ -119,15 +122,14 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true; // TODO -> on fail !
+				cb.onError("writeBytes exception: " + Std.string(unknown));
+				if (stopped) return; // on socket close
 			}
 		}
 	}
 	
 	public function writeFullBytes(bytes:Bytes, pos:Int, len:Int):Void
 	{	
-		// TODO: check blocking !
 		var end:Bool = false;
 		while (!end) {
 			try {
@@ -136,8 +138,8 @@ class PeoteSocket
 			}
 			catch (unknown : Dynamic)
 			{
-				cb.onError("writeBytes(ba) exception: " + Std.string(unknown) + " end:" + end);
-				//end = true; // TODO -> Try AGAIN on fail !
+				cb.onError("writeFullBytes exception: " + Std.string(unknown));
+				if (stopped) return; // on socket close
 			}
 		}
 	}
