@@ -11,7 +11,6 @@ import haxe.Timer;
 import sys.net.Socket;
 import sys.net.Host;
 
-
 typedef Callbacks = {
 	onConnect:Bool -> String -> Void,
 	onClose:String -> Void,
@@ -40,6 +39,7 @@ class PeoteSocket
 		
 		var end:Bool = false;
 		var bytesOutput:BytesOutput = new BytesOutput();
+		bytesOutput.prepare(1024);
 		
 		while (!end) {
 			try {
@@ -59,7 +59,7 @@ class PeoteSocket
 		if (bytesOutput.length>0) cb.onData(bytesOutput.getBytes());
 			
 		// start timer again
-		_timer = new Timer(60);
+		_timer = new Timer(10);
 		_timer.run = readFromSocket;
 	}
 	
@@ -85,7 +85,7 @@ class PeoteSocket
 		if (cb.onData != null)
 		{
 			stopped = false;
-			_timer = new Timer(60);
+			_timer = new Timer(0);
 			_timer.run = readFromSocket;
 		}
 	}
@@ -97,13 +97,13 @@ class PeoteSocket
 	}
 	
 	public function writeByte(b:Int):Void
-	{
-		var end:Bool = false;
-		while (!end) {
+	{	
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.writeByte(b);
 				//_socket.output.writeByte(b & 0xFF); // like _socket.output.writeInt8(b);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
 			{
@@ -111,33 +111,39 @@ class PeoteSocket
 				cb.onError("writeByte exception: " + Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
+		
 	}
 	
 	public function writeBytes(bytes:Bytes):Void
 	{	
-		var end:Bool = false;
-		while (!end) {
+		/*for (i in 0...bytes.length) {
+			//writeByte(bytes.get(i)); flush();
+			//if ((i + 1) % 4000 == 0) flush();
+		}*/
+		_socket.output.prepare(bytes.length);
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.write(bytes);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
-			{
+			{	
 				//if (Std.string(unknown) != "Custom(std@socket_send)")
 				cb.onError("writeBytesexception: " + Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
 	}
 	
 	public function writeFullBytes(bytes:Bytes, pos:Int, len:Int):Void
 	{	
-		var end:Bool = false;
-		while (!end) {
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.writeFullBytes(bytes, pos, len);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
 			{
@@ -145,7 +151,7 @@ class PeoteSocket
 				cb.onError("writeFullBytes exception: " + Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
 	}
 	
 	public function flush():Void

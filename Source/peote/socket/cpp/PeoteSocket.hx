@@ -39,6 +39,7 @@ class PeoteSocket
 		
 		var end:Bool = false;		
 		var bytesOutput:BytesOutput = new BytesOutput();
+		bytesOutput.prepare(2048);
 		
 		while (!end) {
 			try {
@@ -50,7 +51,7 @@ class PeoteSocket
 				if (Std.string(unknown) != "Blocked") {
 					stopped = true;
 					if (Std.string(unknown) == "Eof") cb.onClose(Std.string(unknown));
-					cb.onError("Unknown exception : "+Std.string(unknown));
+					else cb.onError("Unknown exception : '" + Std.string(unknown)+"'");
 				}
 			}
 		}
@@ -58,7 +59,7 @@ class PeoteSocket
 		if (bytesOutput.length>0) cb.onData(bytesOutput.getBytes());
 		
 		// start timer again
-		_timer = new Timer(60);
+		_timer = new Timer(10);
 		_timer.run = readFromSocket;
 	}
 	
@@ -84,7 +85,7 @@ class PeoteSocket
 		if (cb.onData != null)
 		{
 			stopped = false;
-			_timer = new Timer(60);
+			_timer = new Timer(0);
 			_timer.run = readFromSocket;
 		}
 	}
@@ -97,51 +98,51 @@ class PeoteSocket
 	
 	public function writeByte(b:Int):Void
 	{
-		var end:Bool = false;
-		while (!end) {
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.writeByte(b);
 				//_socket.output.writeByte(b & 0xFF); // like _socket.output.writeInt8(b);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeByte exception: "+Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
 	}
 	
 	public function writeBytes(bytes:Bytes):Void
 	{	
-		var end:Bool = false;
-		while (!end) {
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.write(bytes);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeBytes exception: " + Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
 	}
 	
 	public function writeFullBytes(bytes:Bytes, pos:Int, len:Int):Void
 	{	
-		var end:Bool = false;
-		while (!end) {
+		//var end:Bool = false;
+		//while (!end) {
 			try {
 				_socket.output.writeFullBytes(bytes, pos, len);
-				end = true;
+				//end = true;
 			}
 			catch (unknown : Dynamic)
 			{
 				cb.onError("writeFullBytes exception: " + Std.string(unknown));
 				if (stopped) return; // on socket close
 			}
-		}
+		//}
 	}
 	
 	public function flush():Void

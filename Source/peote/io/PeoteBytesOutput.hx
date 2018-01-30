@@ -11,7 +11,7 @@ package peote.io;
 #end
 class PeoteBytesOutput extends haxe.io.BytesOutput
 {
-	#if expose_js static function main() {}#end
+	#if expose_js static function main() {} #end
 
 	override public function writeString(s:String):Void
 	{
