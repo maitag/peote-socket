@@ -62,7 +62,7 @@ typedef Callbacks = {
 
 @:keep @:expose("PeoteSocket") class #if !expose_js PeoteWebSocket #else PeoteSocket #end {
 
-	#if expose_js static function main() {}#end
+	#if expose_js static function main() {} #end
 	
 	var ws:WebSocket;
 	var cb:Callbacks;
@@ -89,7 +89,12 @@ typedef Callbacks = {
 		
 		//trace('CONNECT $_server:$_port');
 
-		try {ws = new WebSocket("ws://"+_server + ":" + _port);} 
+		try {
+			ws = new WebSocket("ws://"+_server + ":" + _port);
+		} catch (err:Dynamic) {
+			trace("WebSocket connection Error:" + err);
+			cb.onError("WebSocket connection Error:" + err);
+		}
 		
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		ws.onopen    = onOpen;
@@ -111,21 +116,36 @@ typedef Callbacks = {
 		ws.close();
 	}
 	
-	public function writeByte(b:Int):Void
+	public function writeByte(byte:Int):Void
 	{
-		//trace("writeByte:" + b);
-		ws.send(new Uint8Array([b]), { binary: true, mask: false });
-		//trace('bufferedAmount: ${ws.bufferedAmount}');
+		try {
+			ws.send(new Uint8Array([byte]), { binary: true, mask: false });
+			// little hack because sending 1 byte that is 48 did not flush
+			if (byte == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
+			//trace("wroteByte(" + byte+"): 1");
+		}
+		catch (err:Dynamic) {
+			trace("WebSocket writeByte Error:"+err);
+			trace('bufferedAmount: ${ws.bufferedAmount}');
+			cb.onError("WebSocket writeByte Error:"+err);
+		}
 	}
 	
-	public function writeBytes(data:Bytes):Void
+	public function writeBytes(bytes:Bytes):Void
 	{
-		//trace("writeBytes - number of bytes sending:" + data.length);
-		//ws.send("TestString");
-		//ws.send(new Uint8Array(data));
-		//ws.send(new Uint8Array(data), { binary: true, mask: false });
-		ws.send(new Uint8Array(data.getData()), { binary: true, mask: false });
-		//trace('bufferedAmount: ${ws.bufferedAmount}');
+		try {
+			ws.send(new Uint8Array(bytes.getData()), { binary: true, mask: false });
+			// little hack because sending 1 byte that is 48 did not flush
+			if (bytes.length == 1)
+				if (bytes.get(0) == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
+			
+			//trace("wroteBytes: " + bytes.length, bytes.get(0));
+		}
+		catch (err:Dynamic) {
+			trace("WebSocket writeBytes Error:"+err);
+			trace('bufferedAmount: ${ws.bufferedAmount}');
+			cb.onError("WebSocket writeBytes Error:"+err); //TODO
+		}
 	}
 	
 	public function flush():Void
@@ -160,16 +180,13 @@ typedef Callbacks = {
 	
 	function onError(s:String)
 	{
-		cb.onError(s);
+		trace("WEBSOCKET-ERROR:"+s);
+		cb.onError("WEBSOCKET-ERROR:"+s);
 	}
 
 	function onMessage(e:Dynamic) // BytesData
 	{
-		//trace("onMessage - " + e.data + " - number of bytes comming in: " + e.data.byteLength);
-		//var ab:ArrayBuffer = e.data;
-		//var a:Array<Int> = cast new Uint8Array(ab, 0, ab.byteLength);
-		
-		//cb.onData( cast new Uint8Array(e.data, 0, e.data.byteLength) );
+		//trace("PeoteSocket: Recieve "+e.data.byteLength+" Bytes");
 		cb.onData( Bytes.ofData(e.data) );		
 	}
 	

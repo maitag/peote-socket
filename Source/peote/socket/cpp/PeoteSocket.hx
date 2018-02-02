@@ -55,8 +55,11 @@ class PeoteSocket
 				}
 			}
 		}
-
-		if (bytesOutput.length>0) cb.onData(bytesOutput.getBytes());
+		
+		if (bytesOutput.length > 0) {
+			trace("PeoteSocket: Recieve " + bytesOutput.length + " Bytes");
+			cb.onData(bytesOutput.getBytes());
+		}
 		
 		// start timer again
 		_timer = new Timer(10);
