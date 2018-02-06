@@ -22,7 +22,13 @@
 
 // This file is generated from mozilla/WebSocket.webidl line 20:0. Do not edit!
 
-package js.html;
+package jsCompat.html;
+
+import js.html.EventTarget;
+import js.html.BinaryType;
+import js.html.Blob;
+import js.html.ArrayBuffer;
+import js.html.ArrayBufferView;
 
 @:native("WebSocket")
 extern class WebSocket extends EventTarget

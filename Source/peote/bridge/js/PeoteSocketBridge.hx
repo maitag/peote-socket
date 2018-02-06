@@ -9,7 +9,11 @@ package peote.bridge.js;
 import haxe.Timer;
 
 import js.Browser;
+#if (haxe_ver < "3.3")
+import jsCompat.swfobject.SWFObject;
+#else
 import js.swfobject.SWFObject;
+#end
 
 import peote.bridge.Proxys;
 import peote.bridge.Param;

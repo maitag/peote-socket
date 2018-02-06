@@ -17,7 +17,7 @@ package peote.socket;
 // wrapper around external Interface of flash socketbridge------
 
 import haxe.io.Bytes;
-import js.html.WebSocket;
+import jsCompat.html.WebSocket; // TODO: check for support in later haxe versions
 import js.html.BinaryType;
 import js.html.Uint8Array;
 import peote.bridge.js.PeoteSocketBridge;

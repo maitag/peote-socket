@@ -1,1 +1,0 @@
-wrap around some missing in haxe.js lib

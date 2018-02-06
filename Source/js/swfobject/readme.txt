@@ -1,1 +1,0 @@
-To be haxe 3.2 compatible ( no need with haxe 3.3)!
