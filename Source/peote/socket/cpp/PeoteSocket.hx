@@ -57,7 +57,7 @@ class PeoteSocket
 		}
 		
 		if (bytesOutput.length > 0) {
-			trace("PeoteSocket: Recieve " + bytesOutput.length + " Bytes");
+			//trace("PeoteSocket: Recieve " + bytesOutput.length + " Bytes");
 			cb.onData(bytesOutput.getBytes());
 		}
 		
