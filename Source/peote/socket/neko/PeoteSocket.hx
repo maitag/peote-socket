@@ -98,60 +98,62 @@ class PeoteSocket
 	
 	public function writeByte(b:Int):Void
 	{	
-		//var end:Bool = false;
-		//while (!end) {
+		var end:Bool = false;
+		while (!end) {
 			try {
 				_socket.output.writeByte(b);
 				//_socket.output.writeByte(b & 0xFF); // like _socket.output.writeInt8(b);
-				//end = true;
+				end = true;
 			}
 			catch (unknown : Dynamic)
 			{
-				//if (Std.string(unknown) != "Custom(std@socket_send_char)")
-				cb.onError("writeByte exception: " + Std.string(unknown));
-				if (stopped) return; // on socket close
+				if (Std.string(unknown) != "Blocked") {
+					stopped = true;
+					if (Std.string(unknown) == "Eof") cb.onClose(Std.string(unknown));
+					else cb.onError("Unknown exception : '" + Std.string(unknown)+"'");
+				}
 			}
-		//}
+		}
 		
 	}
 	
 	public function writeBytes(bytes:Bytes):Void
 	{	
-		/*for (i in 0...bytes.length) {
-			//writeByte(bytes.get(i)); flush();
-			//if ((i + 1) % 4000 == 0) flush();
-		}*/
 		_socket.output.prepare(bytes.length);
-		//var end:Bool = false;
-		//while (!end) {
+		var end:Bool = false;
+		while (!end) {
 			try {
 				_socket.output.write(bytes);
-				//end = true;
+				end = true;
 			}
 			catch (unknown : Dynamic)
 			{	
-				//if (Std.string(unknown) != "Custom(std@socket_send)")
-				cb.onError("writeBytesexception: " + Std.string(unknown));
-				if (stopped) return; // on socket close
+				if (Std.string(unknown) != "Blocked") {
+					stopped = true;
+					if (Std.string(unknown) == "Eof") cb.onClose(Std.string(unknown));
+					else cb.onError("Unknown exception : '" + Std.string(unknown)+"'");
+				}
 			}
-		//}
+		}
 	}
 	
 	public function writeFullBytes(bytes:Bytes, pos:Int, len:Int):Void
 	{	
-		//var end:Bool = false;
-		//while (!end) {
+		var end:Bool = false;
+		while (!end) {
 			try {
 				_socket.output.writeFullBytes(bytes, pos, len);
-				//end = true;
+				end = true;
 			}
 			catch (unknown : Dynamic)
 			{
-				//if (Std.string(unknown) != "Custom(std@socket_send)")
-				cb.onError("writeFullBytes exception: " + Std.string(unknown));
-				if (stopped) return; // on socket close
+				if (Std.string(unknown) != "Blocked") {
+					stopped = true;
+					if (Std.string(unknown) == "Eof") cb.onClose(Std.string(unknown));
+					else cb.onError("Unknown exception : '" + Std.string(unknown)+"'");
+				}
 			}
-		//}
+		}
 	}
 	
 	public function flush():Void
