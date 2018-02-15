@@ -1,0 +1,12 @@
+-cp src
+-main MainCli
+-lib peote-socket tink_cli
+-dce full
+
+--each
+
+-neko build/neko/peote-socket-test.n
+
+--next
+
+-cpp build/cpp
