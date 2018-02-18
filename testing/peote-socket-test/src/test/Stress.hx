@@ -68,7 +68,7 @@ class Stress
 						recievedLength += bytes.length;
 						if (recievedLength >= sendedLength) {
 							if (verbose) log('$recievedLength Bytes recieved');
-							recievedLength = 0;
+							recievedLength -= sendedLength;
 							sendRandomBytes();
 						}
 					}

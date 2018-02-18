@@ -133,11 +133,25 @@ typedef Callbacks = {
 	
 	public function writeBytes(bytes:Bytes):Void
 	{
-		try {
-			ws.send(new Uint8Array(bytes.getData()), { binary: true, mask: false });
+		try { //trace("SENDING:",bytes.length);
+			if (bytes.length <= 0x10000)
+				ws.send(new Uint8Array(bytes.getData()), { binary: true, mask: false });
+			else { // to keep lower than "maxpayload" in peote-proxy ( see Protocol::Websocket there)
+				var pos:Int = 0;
+				var len:Int = 0x10000;
+				while (pos < bytes.length) {
+					len = Std.int(Math.min(bytes.length - pos, len));
+					var chunk:Bytes = Bytes.alloc(len);
+					chunk.blit(0, bytes, pos, len);
+					//trace("CHUNK:",pos, len);
+					ws.send(new Uint8Array(chunk.getData()), { binary: true, mask: false });
+					// little hack because sending 1 byte that is 48 did not flush
+					if (chunk.length == 1) if (chunk.get(0) == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
+					pos += len;
+				}
+			}
 			// little hack because sending 1 byte that is 48 did not flush
-			if (bytes.length == 1)
-				if (bytes.get(0) == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
+			if (bytes.length == 1) if (bytes.get(0) == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
 			
 			//trace("wroteBytes: " + bytes.length, bytes.get(0));
 		}
@@ -173,14 +187,33 @@ typedef Callbacks = {
 		cb.onConnect(true,"connect");
 	}
 	
-	function onClose()
+	function onClose(event:Dynamic)
 	{
-		cb.onClose("closed");
+        var reason:String;
+        reason = switch (event.code) {
+			// See http://tools.ietf.org/html/rfc6455#section-7.4.1
+			case 1000: "Normal closure, meaning that the purpose for which the connection was established has been fulfilled.";
+			case 1001: "An endpoint is \"going away\", such as a server going down or a browser having navigated away from a page.";
+			case 1002: "An endpoint is terminating the connection due to a protocol error";
+			case 1003: "An endpoint is terminating the connection because it has received a type of data it cannot accept (e.g., an endpoint that understands only text data MAY send this if it receives a binary message).";
+			case 1004: "Reserved. The specific meaning might be defined in the future.";
+			case 1005: "No status code was actually present.";
+			case 1006: "The connection was closed abnormally, e.g., without sending or receiving a Close control frame";
+			case 1007: "An endpoint is terminating the connection because it has received data within a message that was not consistent with the type of the message (e.g., non-UTF-8 [http://tools.ietf.org/html/rfc3629] data within a text message).";
+			case 1008: "An endpoint is terminating the connection because it has received a message that \"violates its policy\". This reason is given either if there is no other sutible reason, or if there is a need to hide specific details about the policy.";
+			case 1009: "An endpoint is terminating the connection because it has received a message that is too big for it to process.";
+			case 1010: "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. <br /> Specifically, the extensions that are needed are: " + event.reason;
+			case 1011: "A server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.";
+			case 1015: "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).";
+			default: "Unknown reason";
+		}
+			
+		cb.onClose("closed: "+ reason);
 	}
 	
-	function onError(s:String)
+	function onError(s:Dynamic)
 	{
-		trace("WEBSOCKET-ERROR:"+s);
+		trace("WEBSOCKET-ERROR:",s);
 		cb.onError("WEBSOCKET-ERROR:"+s);
 	}
 
