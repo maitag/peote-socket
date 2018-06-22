@@ -63,10 +63,18 @@ class PeoteBytesInput
 	public inline function readFloat():Float { return bytesInput.readFloat(); }
 	public inline function readDouble():Float { return bytesInput.readDouble(); }
 	
+	public inline function readBool():Bool {return (bytesInput.readByte()==0) ? false : true; }
+	
 	public inline function readString():String
 	{
-		var len = bytesInput.readUInt16();
+		var len = bytesInput.readUInt16(); // TODO: variable chunksize
 		return bytesInput.readString(len);
+	}
+	
+	public inline function read():Bytes
+	{
+		var len = bytesInput.readUInt16(); // TODO: variable chunksize
+		return bytesInput.read(len);
 	}
 
 }
