@@ -21,13 +21,13 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 	override public function writeString(s:String):Void
 	{
 		//writeUInt16(s.length); // did not work in flash
-		writeUInt16(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
+		writeChunkSize(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
 		super.writeString(s);
 	}
 	
 	override public function write(b:haxe.io.Bytes):Void
 	{
-		writeUInt16(b.length); // TODO: variable chunkssize
+		writeChunkSize(b.length); // TODO: variable chunkssize
 		super.write(b);
 	}
 	
@@ -43,7 +43,7 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 		{
 			chunkBytecount++;
 			if (chunkBytecount < maxBytesPerChunkSize) {
-				 byte = chunk_size & 127; // get 7 bits
+				byte = chunk_size & 127; // get 7 bits
 				chunk_size = chunk_size >> 7;
 			}
 			else {
