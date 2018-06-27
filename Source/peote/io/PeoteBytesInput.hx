@@ -76,5 +76,34 @@ class PeoteBytesInput
 		var len = bytesInput.readUInt16(); // TODO: variable chunksize
 		return bytesInput.read(len);
 	}
+	
+	public function readChunkSize():Int
+	{
+		var chunkBytecount = 0;
+		var chunk_size = 0;
+		var chunkReady = false;
+		
+		var byte:Int;
+		
+		while (!chunkReady)
+		{
+			byte = readByte();
+			
+			if (chunkBytecount == PeoteBytesOutput.maxBytesPerChunkSize-1 || byte < 128)
+			{
+				if (byte == 0 && chunkBytecount != 0) trace("MALECIOUS ?");
+				chunk_size = chunk_size | (byte << chunkBytecount*7);
+				//trace("bytes used:" + (chunkBytecount+1));
+				chunkReady = true; chunkBytecount = 0;
+			}
+			else // uppest bit is set and more bytes avail
+			{
+				chunk_size = chunk_size | ( (byte-128) << chunkBytecount*7);
+				chunkBytecount++;
+			}
+		}
+		
+		return(chunk_size);
+	}
 
 }
