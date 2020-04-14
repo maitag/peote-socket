@@ -18,11 +18,11 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 		if (b) writeByte(1) else writeByte(0);
 	}
 
-	override public function writeString(s:String):Void
+	override public function writeString(s:String#if (haxe_ver >= "4.0.0"), ?encoding:haxe.io.Encoding#end):Void
 	{
 		//writeUInt16(s.length); // did not work in flash
 		writeChunkSize(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
-		super.writeString(s);
+		super.writeString(s#if (haxe_ver >= "4.0.0"), encoding#end);
 	}
 	
 	override public function write(b:haxe.io.Bytes):Void
