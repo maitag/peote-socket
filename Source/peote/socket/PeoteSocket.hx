@@ -17,9 +17,18 @@ package peote.socket;
 // wrapper around external Interface of flash socketbridge------
 
 import haxe.io.Bytes;
+
 import jsCompat.html.WebSocket; // TODO: check for support in later haxe versions
+//import js.html.WebSocket;
+
 import js.html.BinaryType;
+
+#if (haxe_ver >= "4.0.0")
+import js.lib.Uint8Array;
+#else
 import js.html.Uint8Array;
+#end
+
 import peote.bridge.js.PeoteSocketBridge;
 import peote.io.PeoteBytesOutput;
 
@@ -90,7 +99,7 @@ typedef Callbacks = {
 		//trace('CONNECT $_server:$_port');
 
 		try {
-			ws = new WebSocket("ws://"+_server + ":" + _port);
+			ws = new WebSocket("ws://"+_server + ":" + _port, []);
 		} catch (err:Dynamic) {
 			trace("WebSocket connection Error:" + err);
 			cb.onError("WebSocket connection Error:" + err);
@@ -119,7 +128,9 @@ typedef Callbacks = {
 	public function writeByte(byte:Int):Void
 	{
 		try {
+			//trace("PeoteSocket(WS) - writeByte:", byte);
 			ws.send(new Uint8Array([byte]), { binary: true, mask: false });
+			
 			// little hack because sending 1 byte that is 48 did not flush
 			if (byte == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
 			//trace("wroteByte(" + byte+"): 1");
@@ -133,9 +144,16 @@ typedef Callbacks = {
 	
 	public function writeBytes(bytes:Bytes):Void
 	{
-		try { //trace("SENDING:",bytes.length);
-			if (bytes.length <= 0x10000)
-				ws.send(new Uint8Array(bytes.getData()), { binary: true, mask: false });
+		try {
+			//trace("PeoteSocket(WS) - writeBytes:", bytes.toHex(),bytes.getData().byteLength, bytes.length);
+			if (bytes.length <= 0x10000) {
+				
+				//ws.send(new Uint8Array(bytes.getData()), { binary: true, mask: false });
+				
+				// CHECK: after haxe 4 migration it needs "sclice" here 
+				ws.send(bytes.getData().slice(0, bytes.length), { binary: true, mask: false });
+				
+			}
 			else { // to keep lower than "maxpayload" in peote-proxy ( see Protocol::Websocket there)
 				var pos:Int = 0;
 				var len:Int = 0x10000;
@@ -144,9 +162,14 @@ typedef Callbacks = {
 					var chunk:Bytes = Bytes.alloc(len);
 					chunk.blit(0, bytes, pos, len);
 					//trace("CHUNK:",pos, len);
-					ws.send(new Uint8Array(chunk.getData()), { binary: true, mask: false });
+					
+					// TODO CHECK: needs "sclice" here also ?
+					//ws.send(new Uint8Array(chunk.getData()), { binary: true, mask: false });
+					ws.send(chunk.getData(), { binary: true, mask: false });
+					
 					// little hack because sending 1 byte that is 48 did not flush
 					if (chunk.length == 1) if (chunk.get(0) == 48) ws.send(new Uint8Array([]), { binary: true, mask: false });
+					
 					pos += len;
 				}
 			}

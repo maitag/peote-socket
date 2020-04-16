@@ -49,7 +49,7 @@ class PeoteBytesInput
 		if (bytesLeft() > 0) bytes.blit( 0, bytesInput.readAll(), 0, bytesLeft() ); // TODO: optimize (extend BytesInput Class)
 		bytes.blit(bytesLeft(), b, 0, b.length);
 		
-		bytesInput = new BytesInput( bytes );		
+		bytesInput = new BytesInput( bytes );
 	}
 	
 	inline function get_length():Int        return bytesInput.length;
@@ -93,7 +93,7 @@ class PeoteBytesInput
 				chunkBytecount++;
 			}
 		}
-		
+		//trace("PeoteBytesInput - READ CHUNKSIZE:",chunk_size);
 		return(chunk_size);
 	}
 

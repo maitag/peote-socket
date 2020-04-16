@@ -34,6 +34,7 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 	public static inline var maxBytesPerChunkSize = 4;
 	public function writeChunkSize(chunk_size:Int):Void
 	{
+		//trace("PeoteBytesOutput - writeChunkSize:", chunk_size);
 		if (chunk_size < 0) throw("Error(writeChunkSize): can't handle negative chunksize");
 		
 		var chunkBytecount:Int = 0;

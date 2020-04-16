@@ -27,8 +27,13 @@ package jsCompat.html;
 import js.html.EventTarget;
 import js.html.BinaryType;
 import js.html.Blob;
+#if (haxe_ver >= "4.0.0")
+import js.lib.ArrayBuffer;
+import js.lib.ArrayBufferView;
+#else
 import js.html.ArrayBuffer;
 import js.html.ArrayBufferView;
+#end
 
 @:native("WebSocket")
 extern class WebSocket extends EventTarget
