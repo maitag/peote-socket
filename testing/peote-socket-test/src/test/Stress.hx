@@ -76,6 +76,9 @@ class Stress
 					
 				}
 		});
+		#if js
+		peoteSocket.setProxy("localhost", 3211);
+		#end
 		peoteSocket.connect(host, port);
 
 	}

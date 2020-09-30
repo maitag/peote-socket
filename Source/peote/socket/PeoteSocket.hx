@@ -11,10 +11,7 @@ package peote.socket;
 	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
 #elseif flash
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
-
-#elseif js
-
-// wrapper around external Interface of flash socketbridge------
+#elseif html5
 
 import haxe.io.Bytes;
 
@@ -29,7 +26,6 @@ import js.lib.Uint8Array;
 import js.html.Uint8Array;
 #end
 
-import peote.bridge.js.PeoteSocketBridge;
 import peote.io.PeoteBytesOutput;
 
 typedef Callbacks = {
@@ -39,67 +35,53 @@ typedef Callbacks = {
 	onData:Bytes -> Void
 }
 
-#if !expose_js
-// wrapping around pre generated PeoteSocketBridge.swf
-@:native('PeoteSocket') extern class PeoteSocket
-{
-	public function new (callbacks:Callbacks) {}
-
-	public function connect(server:String, port:Int):Void {}
-	public function close():Void {}
-	public function writeByte(b:Int):Void {}
-	public function writeBytes(data:Bytes):Void {}
-	public function flush():Void {}	
-}
-#end
-
-// convert Array into peoteBytes (haxe.io.Bytes)
-@:keep @:expose("PeoteSocketTool") class PeoteSocketTool {
-	public static function toBytes(arr:Array<Int>):Bytes
-	{
-		return Bytes.ofData(new Uint8Array(arr).buffer);
-	}
-	public static function fromBytes(bytes:Bytes):Array<Int>
-	{
-		return [ for( i in 0...bytes.length ) bytes.get(i) ];
-	}
-}
-
-
-
 // ------------ wrapping around websockets ---------------
 
-@:keep @:expose("PeoteSocket") class #if !expose_js PeoteWebSocket #else PeoteSocket #end {
+//@:keep @:expose("PeoteSocket") class PeoteSocket {
+class PeoteSocket {
 
-	#if expose_js static function main() {} #end
+	//#if expose_js static function main() {} #end
 	
 	var ws:WebSocket;
 	var cb:Callbacks;
 	
 	var is_proxy:Bool = false;
-	var	forward_server:String;
-	var forward_port:Int;
+	var	proxy_server:String;
+	var proxy_port:Int;
+	var	forward_to_server:String;
+	var forward_to_port:Int;
 	
 	public function new (callbacks:Callbacks)
 	{
 		this.cb = callbacks;		
 	}
 	
+	public function setProxy(server:String, port:Int):Void 
+	{
+		is_proxy = true;
+		proxy_server = server;
+		proxy_port = port;		
+	}
+
 	public function connect(server:String, port:Int):Void
 	{
-		var _server:String = server;
-		var _port:Int = port;
-		
-		if (PeoteSocketBridge.proxys != null)
+		var supported:Bool = untyped __js__("('WebSocket' in window || 'MozWebSocket' in window)");
+		if (!supported) {
+			cb.onError("Websockets not available");
+		}
+
+		if (is_proxy)
 		{
-			if (PeoteSocketBridge.proxys.proxyServerWS != null) _server = PeoteSocketBridge.proxys.proxyServerWS;
-			if (PeoteSocketBridge.proxys.proxyPortWS   != null) _port   = PeoteSocketBridge.proxys.proxyPortWS;
+			forward_to_server = server;
+			forward_to_port = port;
+			server = proxy_server;
+			port = proxy_port;
 		}
 		
 		//trace('CONNECT $_server:$_port');
 
 		try {
-			ws = new WebSocket("ws://"+_server + ":" + _port, []);
+			ws = new WebSocket("ws://"+server + ":" + port, []);
 		} catch (err:Dynamic) {
 			trace("WebSocket connection Error:" + err);
 			cb.onError("WebSocket connection Error:" + err);
@@ -110,14 +92,6 @@ typedef Callbacks = {
 		ws.onclose   = onClose;
 		ws.onerror   = onError;
 		ws.onmessage = onMessage;
-		
-		// for proxys send adress to forward
-		if (_server != server || _port != port)
-		{
-			is_proxy = true;
-			forward_server = server;
-			forward_port = port;
-		}
 	}
 	
 	public function close():Void
@@ -198,12 +172,12 @@ typedef Callbacks = {
 		//trace('binaryType: ${ws.binaryType}');
 		//trace('protocol: ${ws.protocol}');
 		
-		// for proxys send adress to forward
+		// for proxys send adress where to forward
 		if (is_proxy)
 		{
 			var output:PeoteBytesOutput = new PeoteBytesOutput();
-			output.writeString(forward_server);
-			output.writeUInt16(forward_port);
+			output.writeString(forward_to_server);
+			output.writeUInt16(forward_to_port);
 			writeBytes( output.getBytes() );
 		}
 

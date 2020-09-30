@@ -8,8 +8,6 @@ package;
 import haxe.io.Bytes;
 import lime.app.Application;
 
-import peote.bridge.PeoteSocketBridge;
-
 import peote.socket.PeoteSocket;
 import peote.telnet.PeoteTelnet;
 import peote.io.PeoteBytesInput;
@@ -23,25 +21,6 @@ class PeoteTelnetTest extends Application {
 	{
 		super();
 		
-		// provides adresses for peote-proxy server that handles flashpolicy and websockets
-		// only relevant for js or flash targets
-		// (cpp will ignore this and opens directly tcp socket immediatly)
-		PeoteSocketBridge.load( {
-			onload: openSocket,
-			//preferWebsockets: true,  // only for js
-			proxys: {
-				proxyServerWS:"localhost",  // for js websocket proxy
-				proxyPortWS  : 3211,
-				
-				proxyServerSWF:"localhost", // for flash proxy
-				proxyPortSWF  :3211,
-			},
-			onfail: function() { trace("Browser doesn't support flash or websockets"); }
-		});
-	}
-	
-	public function openSocket():Void
-	{
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:" + connected + " - " + msg);
@@ -56,15 +35,17 @@ class PeoteTelnetTest extends Application {
 		});
 		
 		peoteTelnet = new PeoteTelnet(peoteSocket);
-		peoteSocket.connect("lem", 23); // be sure there is running telnet server
-		
+		#if js
+		// for html5 target a peote-proxy server is need to translate websocket-protocol into TCP
+		peoteSocket.setProxy("localhost", 3211);
+		#end
+		peoteSocket.connect("lem", 23); // be sure there is running telnet server		
 	}
 	
 	public inline function onData(bytes:Bytes ):Void 
 	{
 		var input:PeoteBytesInput = new PeoteBytesInput(bytes);
-		peoteTelnet.parseTelnetData( input, remoteInput );
-		
+		peoteTelnet.parseTelnetData( input, remoteInput );		
 	}
 
 	public inline function remoteInput(b:Int):Void

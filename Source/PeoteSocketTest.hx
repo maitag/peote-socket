@@ -8,8 +8,6 @@ package;
 import haxe.io.Bytes;
 import lime.app.Application;
 
-import peote.bridge.PeoteSocketBridge;
-
 import peote.io.PeoteBytesInput;
 import peote.io.PeoteBytesOutput;
 import peote.socket.PeoteSocket;
@@ -22,38 +20,26 @@ class PeoteSocketTest extends Application {
 	{
 		super();
 		
-		// provides adresses for peote-proxy server that handles flashpolicy and websockets
-		// only relevant for js or flash targets
-		// (cpp will ignore this and opens directly tcp socket immediatly)
-		PeoteSocketBridge.load( {
-			onload: openSocket,
-			preferWebsockets: true,  // only for js
-			proxys: {
-				proxyServerWS:"localhost",  // for js websocket proxy
-				proxyPortWS  : 3211,
-				
-				proxyServerSWF:"localhost", // for flash proxy
-				proxyPortSWF  :3211,
-			},
-			onfail: function() { trace("Browser doesn't support flash- or websockets"); }
-		});
-	}
-	
-	public function openSocket():Void
-	{
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:" + connected + " - " + msg);
-					sendTestData();
+					//sendTestData();
 				},
 				onClose: function(msg) {
 					trace("onClose:"+msg);
 				},
 				onError: function(msg) {
-					trace("onError:"+msg);
+					trace("onError:" + msg);
+					#if html5
+					// TODO: trace("Browser doesn't support websockets")
+					#end
 				},
 				onData: onData
 		});
+		#if html5
+		// for html5 target a peote-proxy server is need to translate websocket-protocol into TCP
+		peoteSocket.setProxy("localhost", 3211);
+		#end
 		peoteSocket.connect("lem", 23);
 	}
 	

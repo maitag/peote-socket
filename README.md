@@ -3,8 +3,7 @@
 This Library is written in [Haxe](http://haxe.org) to provide simple Socket-API  
 for multiple targets (cpp, neko, html5, flash, android). 
 
-Inside webbrowser it gives fallback-support (websocket or swf-socket-bridge) and  
-on server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to wrap around raw-tcp.  
+On server side there is [peote-proxy](https://github.com/maitag/peote-proxy) to wrap websockets around raw-tcp.  
 
 ## Installation:
 ```
@@ -32,36 +31,11 @@ peoteSocket.connect("mud.tubmud.de", 7680);
 ```
 
 
-## Fallback and proxys for html5:
+## Proxy for html5:
 
-To get swf/websocket fallback support for html5-targets,  
-build the dependence `peoteSocketBridge.swf` first:  
+For html5 target you can set a proxy-address before creating a new PeoteSocket:
 ```
-haxe peoteSocketBridge.hxml
-```
-
-For html5 or flash-targets you can set a proxy-address before creating a new PeoteSocket,  
-cpp-targets will ignore this and calls the onload-callback directly.  
-```
-PeoteSocketBridge.load( {
-	onload: openSocket,      // callback if swfbridges is loaded or websockets available
-	preferWebsockets: true,  // trying websockets first and fallback to flash
-	proxys: {
-		proxyServerWS:"localhost",  // proxy for websocket
-		proxyPortWS  : 3211,
-		
-		proxyServerSWF:"localhost", // proxy for peoteSocketBridge.swf
-		proxyPortSWF  :3211,
-	},
-	onfail: function() { trace("Browser doesn't support flash-raw-sockets or websockets"); }
-});
-
-
-function openSocket() { 
-	peoteSocket = new PeoteSocket({
-	...
-}
-
+peoteSocket.setProxy(<server>, <Port>)
 ```
 
 

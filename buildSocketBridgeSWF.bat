@@ -1,2 +1,0 @@
-haxe peoteSocketBridge.hxml
-pause
