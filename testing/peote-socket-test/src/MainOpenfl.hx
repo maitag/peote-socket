@@ -14,8 +14,8 @@ class MainOpenfl extends Sprite {
 	
 	var logClient:OutputText;
 			
-	var minBytes:Int = 0x10001;
-	var maxBytes:Int = 0x10001;
+	var minBytes:Int = 0x10000;
+	var maxBytes:Int = 0x10000; // <- maximum (see may payload also into proxy for websocket)
 
 	var test:Stress;
 	
