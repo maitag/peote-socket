@@ -22,6 +22,7 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 	{
 		//writeUInt16(s.length); // did not work in flash
 		writeChunkSize(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
+		// TODO: maybe s.length ?
 		super.writeString(s#if (haxe_ver >= "4.0.0"), encoding#end);
 	}
 	

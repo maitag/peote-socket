@@ -9,6 +9,8 @@ package peote.socket;
 	typedef PeoteSocket = peote.socket.cpp.PeoteSocket;
 #elseif neko
 	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
+#elseif hl
+	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
 #elseif flash
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
 #elseif html5
@@ -176,7 +178,8 @@ class PeoteSocket {
 		if (is_proxy)
 		{
 			var output:PeoteBytesOutput = new PeoteBytesOutput();
-			output.writeString(forward_to_server);
+			//output.writeString(forward_to_server);
+			output.writeString(forward_to_server, haxe.io.Encoding.RawNative);
 			output.writeUInt16(forward_to_port);
 			writeBytes( output.getBytes() );
 		}

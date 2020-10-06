@@ -11,7 +11,6 @@ import neko.vm.Deque;
 #end
 
 import haxe.io.Bytes;
-import haxe.io.BytesOutput;
 import haxe.Timer;
 
 import sys.net.Socket;

@@ -1,7 +1,7 @@
 # PeoteSocket - Raw TCP Socket Client Library
 
 This Library is written in [Haxe](http://haxe.org) to provide simple Socket-API  
-for multiple targets (cpp, neko, html5, flash, android). 
+for multiple targets (cpp, neko, hashlink, html5, flash, android). 
 
 ## Installation:
 ```

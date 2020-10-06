@@ -10,3 +10,7 @@
 --next
 
 -cpp build/cpp
+
+--next
+
+-hl build/hl/peote-socket-test.hl

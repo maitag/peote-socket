@@ -4,9 +4,13 @@ package peote.socket.cpp;
  * @author sylvio sell
  */
 
+#if (haxe_ver >= "4.0.0")
+import sys.thread.Deque;
+#else
 import cpp.vm.Deque;
+#end
+
 import haxe.io.Bytes;
-import haxe.io.BytesOutput;
 import haxe.Timer;
 
 import sys.net.Socket;
