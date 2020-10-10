@@ -5,14 +5,8 @@ package peote.io;
  * 
  */
 
-#if expose_js
-@:keep
-@:expose("PeoteBytesOutput")
-#end
 class PeoteBytesOutput extends haxe.io.BytesOutput
-{
-	#if expose_js static function main() {} #end
-	
+{	
 	public function writeBool(b:Bool):Void
 	{
 		if (b) writeByte(1) else writeByte(0);

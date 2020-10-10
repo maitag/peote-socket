@@ -46,7 +46,8 @@ class PeoteSocket {
 	
 	var ws:WebSocket;
 	var cb:Callbacks;
-	
+	var isConnected:Bool = false;
+
 	var is_proxy:Bool = false;
 	var	proxy_server:String;
 	var proxy_port:Int;
@@ -69,8 +70,10 @@ class PeoteSocket {
 	{
 		var supported:Bool = untyped __js__("('WebSocket' in window || 'MozWebSocket' in window)");
 		if (!supported) {
-			cb.onError("Websockets not available");
+			cb.onConnect(false, "Websockets not available");
 		}
+		
+		// TODO: if (isConnected) -> already connected
 
 		if (is_proxy)
 		{
@@ -80,19 +83,21 @@ class PeoteSocket {
 			port = proxy_port;
 		}
 		
-		//trace('CONNECT $_server:$_port');
+		//trace('CONNECT $server:$port');
 
-		try {
+		//try {
 			ws = new WebSocket("ws://"+server + ":" + port, []);
-		} catch (err:Dynamic) {
+/*		} catch (err:Dynamic) {
+			// TODO: useless here because never catched
 			trace("WebSocket connection Error:" + err);
-			cb.onError("WebSocket connection Error:" + err);
+			//cb.onError("WebSocket connection Error:" + err);
+			cb.onConnect(false, "WebSocket connection Error:" + err);
 		}
-		
+*/		
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		ws.onopen    = onOpen;
 		ws.onclose   = onClose;
-		ws.onerror   = onError;
+		//ws.onerror   = onError;
 		ws.onmessage = onMessage;
 	}
 	
@@ -170,6 +175,8 @@ class PeoteSocket {
 	
 	function onOpen()
 	{
+		isConnected = true;
+		ws.onerror  = onError;
 		//trace("onOpen");
 		//trace('binaryType: ${ws.binaryType}');
 		//trace('protocol: ${ws.protocol}');
@@ -202,18 +209,22 @@ class PeoteSocket {
 			case 1007: "An endpoint is terminating the connection because it has received data within a message that was not consistent with the type of the message (e.g., non-UTF-8 [http://tools.ietf.org/html/rfc3629] data within a text message).";
 			case 1008: "An endpoint is terminating the connection because it has received a message that \"violates its policy\". This reason is given either if there is no other sutible reason, or if there is a need to hide specific details about the policy.";
 			case 1009: "An endpoint is terminating the connection because it has received a message that is too big for it to process.";
-			case 1010: "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. <br /> Specifically, the extensions that are needed are: " + event.reason;
+			case 1010: "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. Specifically, the extensions that are needed are: " + event.reason;
 			case 1011: "A server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.";
 			case 1015: "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).";
 			default: "Unknown reason";
 		}
-			
-		cb.onClose("closed: "+ reason);
+		
+		if (!isConnected) cb.onConnect(false, reason);
+		else {
+			isConnected = false;
+			cb.onClose("closed: " + reason);
+		}
 	}
 	
 	function onError(s:Dynamic)
 	{
-		trace("WEBSOCKET-ERROR:",s);
+		//trace("WEBSOCKET-ERROR:",s);
 		cb.onError("WEBSOCKET-ERROR:"+s);
 	}
 

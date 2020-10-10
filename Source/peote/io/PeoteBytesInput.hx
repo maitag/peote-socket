@@ -1,27 +1,15 @@
 package peote.io;
 
-import haxe.io.Bytes;
-import haxe.io.BytesInput;
-
 /**
  * by Sylvio Sell - Rostock 2015
  * 
  */
 
-#if expose_js
-@:keep
-@:expose("PeoteBytesInput")
-#end
+import haxe.io.Bytes;
+import haxe.io.BytesInput;
+
 class PeoteBytesInput
 {
-	#if expose_js
-	static function __init__():Void {
-		untyped Object.defineProperty(PeoteBytesInput.prototype, "length", { get: PeoteBytesInput.prototype.get_length });
-		untyped Object.defineProperty(PeoteBytesInput.prototype, "position", { get: PeoteBytesInput.prototype.get_position, set: PeoteBytesInput.prototype.set_position });
-    }
-	static function main() {}
-	#end
-
 	public var length(get,never):Int;
 	public var position(get,set):Int;
 	
