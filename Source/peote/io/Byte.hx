@@ -25,8 +25,8 @@ abstract Byte(Int) to Int {
 		inline function _maxMin(v):Byte return if (v > MAX) MAX else if (v < MIN) MIN else v;
 		inline function _minMax(v):Byte return if (v < MIN) MIN else if (v > MAX) MAX else v;
 		
-		//@:op(A + B) inline function add  (v):Byte return _maxMin(this + v);
-		//@:op(A - B) inline function subtr(v):Byte return _minMax(this - v);
+		@:op(A + B) inline function add  (v):Byte return _maxMin(this + v);
+		@:op(A - B) inline function subtr(v):Byte return _minMax(this - v);
 		@:op(++A) inline function inc()  return this = _max(this + 1);
 		@:op(--A) inline function dec()  return this = _min(this - 1);
 		@:op(A++) inline function incp() { var t = this; this = _max(this + 1); return t; }
