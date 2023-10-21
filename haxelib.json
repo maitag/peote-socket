@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["peote", "socket", "tcp", "networking", "telnet"],
 	"description": "Raw TCP Socket Client Library",
-	"version": "0.7.9",
-	"classPath": "Source/",
-	"releasenote": "removing swf-bridge fallback for html5",
+	"version": "0.8.0",
+	"classPath": "src/",
+	"releasenote": "fixing chunkSize for PeoteBytes in-/output, renaming Source into src",
 	"contributors": ["maitag"],
 	"dependencies": {
 	}

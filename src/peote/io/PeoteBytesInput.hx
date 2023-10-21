@@ -15,10 +15,14 @@ class PeoteBytesInput
 	
 	var bytesInput:BytesInput;
 	
-	public inline function new(bytes:Bytes = null):Void
+	var maxBytesPerChunkSize:Int;
+
+	public inline function new(bytes:Bytes = null, maxBytesPerChunkSize:Int = 4):Void
 	{
 		if (bytes != null) bytesInput = new BytesInput(bytes);
 		else bytesInput = new BytesInput(Bytes.alloc(0));
+		
+		this.maxBytesPerChunkSize = maxBytesPerChunkSize;
 	}
 	
 	public inline function bytesLeft():Int {
@@ -69,7 +73,7 @@ class PeoteBytesInput
 		{
 			byte = readByte();
 			
-			if (chunkBytecount == PeoteBytesOutput.maxBytesPerChunkSize-1 || byte < 128)
+			if (chunkBytecount == maxBytesPerChunkSize-1 || byte < 128)
 			{
 				if (byte == 0 && chunkBytecount != 0) throw("chunksize");
 				chunk_size = chunk_size | (byte << chunkBytecount*7);

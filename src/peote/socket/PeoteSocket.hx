@@ -13,7 +13,7 @@ package peote.socket;
 	typedef PeoteSocket = peote.socket.neko.PeoteSocket;
 #elseif flash
 	typedef PeoteSocket = peote.socket.flash.PeoteSocket;
-#elseif html5
+#elseif (html5 || js)
 
 import haxe.io.Bytes;
 

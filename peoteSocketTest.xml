@@ -4,7 +4,7 @@
 	<meta title="PeoteSocketTest" package="peote.socket" version="0.7.9" company="Sylvio Sell - maitag" />
 	<app main="PeoteSocketTest" path="Export" file="peoteSocketTest" />
 	
-	<source path="Source" />
+	<source path="src" />
 	
 	<haxelib name="lime" />
 		

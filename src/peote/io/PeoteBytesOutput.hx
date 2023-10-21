@@ -5,9 +5,20 @@ package peote.io;
  * 
  */
 
-class PeoteBytesOutput extends haxe.io.BytesOutput
+import haxe.io.Bytes;
+import haxe.io.BytesOutput;
+
+class PeoteBytesOutput extends BytesOutput
 {	
-	public function writeBool(b:Bool):Void
+	var maxBytesPerChunkSize:Int;
+
+	public function new(maxBytesPerChunkSize:Int = 4):Void
+	{
+		super();		
+		this.maxBytesPerChunkSize = maxBytesPerChunkSize;		
+	}
+	
+	public inline function writeBool(b:Bool):Void
 	{
 		if (b) writeByte(1) else writeByte(0);
 	}
@@ -15,7 +26,7 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 	override public function writeString(s:String#if (haxe_ver >= "4.0.0"), ?encoding:haxe.io.Encoding#end):Void
 	{
 		//writeUInt16(s.length); // did not work in flash
-		writeChunkSize(haxe.io.Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
+		writeChunkSize(Bytes.ofString(s).length); // OK (flash and windows-cpp) TODO: variable chunkssize
 		// TODO: maybe s.length ?
 		super.writeString(s#if (haxe_ver >= "4.0.0"), encoding#end);
 	}
@@ -26,7 +37,6 @@ class PeoteBytesOutput extends haxe.io.BytesOutput
 		super.write(b);
 	}
 	
-	public static inline var maxBytesPerChunkSize = 4;
 	public function writeChunkSize(chunk_size:Int):Void
 	{
 		//trace("PeoteBytesOutput - writeChunkSize:", chunk_size);

@@ -4,7 +4,7 @@
 	<meta title="PeoteTelnetTest" package="peote.telnet" version="0.7.3" company="Sylvio Sell - maitag" />
 	<app main="PeoteTelnetTest" path="Export" file="peoteTelnetTest" />
 	
-	<source path="Source" />
+	<source path="src" />
 	
 	<haxelib name="lime" />
 	
