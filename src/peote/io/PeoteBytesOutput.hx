@@ -12,10 +12,11 @@ class PeoteBytesOutput extends BytesOutput
 {	
 	var maxBytesPerChunkSize:Int;
 
-	public function new(maxBytesPerChunkSize:Int = 4):Void
+	public function new(maxBytesPerChunkSize:Int = 4, ?bigEndian:Null<Bool>):Void
 	{
 		super();		
 		this.maxBytesPerChunkSize = maxBytesPerChunkSize;		
+		if (bigEndian != null) this.bigEndian = bigEndian;
 	}
 	
 	public inline function writeBool(b:Bool):Void

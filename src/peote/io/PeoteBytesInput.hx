@@ -17,12 +17,13 @@ class PeoteBytesInput
 	
 	var maxBytesPerChunkSize:Int;
 
-	public inline function new(bytes:Bytes = null, maxBytesPerChunkSize:Int = 4):Void
+	public inline function new(bytes:Bytes = null, maxBytesPerChunkSize:Int = 4, ?bigEndian:Null<Bool>):Void
 	{
 		if (bytes != null) bytesInput = new BytesInput(bytes);
 		else bytesInput = new BytesInput(Bytes.alloc(0));
 		
 		this.maxBytesPerChunkSize = maxBytesPerChunkSize;
+		if (bigEndian != null) bytesInput.bigEndian = bigEndian;
 	}
 	
 	public inline function bytesLeft():Int {
@@ -50,7 +51,10 @@ class PeoteBytesInput
 	
 	public inline function readByte():Int     return bytesInput.readByte();
 	public inline function readUInt16():Int   return bytesInput.readUInt16();
+	public inline function readUInt24():Int   return bytesInput.readUInt24();
+	public inline function readInt8():Int     return bytesInput.readInt8();
 	public inline function readInt16():Int    return bytesInput.readInt16();
+	public inline function readInt24():Int    return bytesInput.readInt24();
 	public inline function readInt32():Int    return bytesInput.readInt32();
 	public inline function readFloat():Float  return bytesInput.readFloat();
 	public inline function readDouble():Float return bytesInput.readDouble();
