@@ -2,7 +2,11 @@
 <project>
 	
 	<meta title="PeoteSocketTest" package="peote.socket" version="0.7.9" company="Sylvio Sell - maitag" />
+	
 	<app main="PeoteSocketTest" path="Export" file="peoteSocketTest" />
+	<!--<app main="PeoteTelnetTest" path="Export" file="peoteTelnetTest" />-->
+	
+	<haxedef name="debugtelnet" />
 	
 	<source path="src" />
 	

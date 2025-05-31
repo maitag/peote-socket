@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["peote", "socket", "tcp", "networking", "telnet"],
 	"description": "Raw TCP Socket Client Library",
-	"version": "0.8.0",
+	"version": "0.8.1",
 	"classPath": "src/",
-	"releasenote": "fixing chunkSize for PeoteBytes in-/output, renaming Source into src",
+	"releasenote": "fixing websockets",
 	"contributors": ["maitag"],
 	"dependencies": {
 	}

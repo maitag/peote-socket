@@ -23,7 +23,7 @@ class PeoteSocketTest extends Application {
 		peoteSocket = new PeoteSocket( { 
 				onConnect: function(connected, msg) {
 					trace("onConnect:" + connected + " - " + msg);
-					//sendTestData();
+					sendTestData();
 				},
 				onClose: function(msg) {
 					trace("onClose:"+msg);
@@ -40,7 +40,8 @@ class PeoteSocketTest extends Application {
 		// for html5 target a peote-proxy server is need to translate websocket-protocol into TCP
 		peoteSocket.setProxy("localhost", 3211);
 		#end
-		peoteSocket.connect("lem", 23);
+		// peoteSocket.connect("lem", 23);
+		peoteSocket.connect("localhost", 7680);
 	}
 	
 	public inline function sendTestData():Void
